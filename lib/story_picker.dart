@@ -1,7 +1,7 @@
 library story_picker;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'src/models/result.dart';
+export 'src/models/options.dart';
+export 'src/widgets/picker.dart';
+
+export 'package:page_transition/page_transition.dart';
