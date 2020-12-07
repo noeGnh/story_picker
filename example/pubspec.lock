@@ -260,7 +260,7 @@ packages:
       name: page_transition
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.7+2"
+    version: "1.1.7+3"
   path:
     dependency: transitive
     description:
@@ -400,7 +400,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.0.2"
   stream_channel:
     dependency: transitive
     description:

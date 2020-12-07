@@ -146,7 +146,9 @@ class TextProvider extends ChangeNotifier{
         context,
         StoryPickerResult(
             storyText: StoryText(
+              font: fonts[textFontIndex],
               text: textEditingController.text,
+              align: textAlignments[textAlignIndex],
               color: textBackgrounds[textBgIndex].textColor,
               linearGradient: textBackgrounds[textBgIndex].linearGradient,
             ),

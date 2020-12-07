@@ -15,10 +15,12 @@ class StoryPickerResult{
 class StoryText{
 
   LinearGradient linearGradient;
+  TextAlign align;
   Color color;
+  String font;
   String text;
 
-  StoryText({this.text, this.color, this.linearGradient});
+  StoryText({this.text, this.color, this.font, this.align, this.linearGradient});
 
 }
 
