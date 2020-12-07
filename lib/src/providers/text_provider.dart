@@ -1,76 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:story_picker/src/models/bg_model.dart';
 import 'package:story_picker/src/models/options.dart';
 import 'package:story_picker/src/models/result.dart';
+import 'package:story_picker/src/utils/constants.dart';
+import 'package:story_picker/src/utils/utils.dart';
 import 'package:story_picker/src/widgets/gallery.dart';
 
 class TextProvider extends ChangeNotifier{
-
-  final fonts = [
-    'FreightSans',
-    'MADECanvas',
-    'ProximaNova',
-    'AvenyT',
-    'Montserrat',
-    'OpenSans'
-  ];
-
-  final textAlignments = [
-    TextAlign.center,
-    TextAlign.left,
-    TextAlign.right
-  ];
-
-  final textBackgrounds = [
-    BgModel(
-        linearGradient: LinearGradient(
-          begin: Alignment.bottomLeft,
-          end: Alignment.topRight,
-          stops: [0.1, 0.5, 0.8, 0.9],
-          colors: [Colors.red, Colors.yellow, Colors.blue, Colors.purple]
-        ),
-        hintColor: Colors.black87,
-        textColor: Colors.black
-    ),
-    BgModel(
-        linearGradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [Colors.purple, Colors.blue]
-        ),
-        hintColor: Colors.black87,
-        textColor: Colors.black
-    ),
-    BgModel(
-        linearGradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [Colors.yellow, Colors.deepPurple]
-        ),
-        hintColor: Colors.black87,
-        textColor: Colors.black
-    ),
-    BgModel(
-        linearGradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [Colors.red, Colors.orange]
-        ),
-        hintColor: Colors.black87,
-        textColor: Colors.black
-    ),
-    BgModel(
-        linearGradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [Colors.yellow, Colors.green,Colors.blue]
-        ),
-        hintColor: Colors.black87,
-        textColor: Colors.black
-    )
-  ];
 
   TextEditingController textEditingController;
   int textFontIndex, textAlignIndex, textBgIndex;
@@ -85,7 +22,7 @@ class TextProvider extends ChangeNotifier{
   }
   
   switchTextFont(){
-    if (textFontIndex + 1 >= fonts.length) {
+    if (textFontIndex + 1 >= StoryConstants.fonts.length) {
       textFontIndex = 0;
     }else{
       textFontIndex++;
@@ -95,7 +32,7 @@ class TextProvider extends ChangeNotifier{
   }
   
   switchTextAlign(){
-    if (textAlignIndex + 1 >= textAlignments.length) {
+    if (textAlignIndex + 1 >= StoryConstants.textAlignments.length) {
       textAlignIndex = 0;
     }else{
       textAlignIndex++;
@@ -105,7 +42,7 @@ class TextProvider extends ChangeNotifier{
   }
 
   switchTextBackground(){
-    if (textBgIndex + 1 >= textBackgrounds.length) {
+    if (textBgIndex + 1 >= StoryConstants.textBackgrounds.length) {
       textBgIndex = 0;
     }else{
       textBgIndex++;
@@ -146,11 +83,14 @@ class TextProvider extends ChangeNotifier{
         context,
         StoryPickerResult(
             storyText: StoryText(
-              font: fonts[textFontIndex],
+              font: StoryConstants.fonts[textFontIndex],
               text: textEditingController.text,
-              align: textAlignments[textAlignIndex],
-              color: textBackgrounds[textBgIndex].textColor,
-              linearGradient: textBackgrounds[textBgIndex].linearGradient,
+              align: StoryConstants.textAlignments[textAlignIndex],
+              colorHex: StoryConstants.textBackgrounds[textBgIndex].textColor.toHex(),
+              linearGradient: StoryConstants.textBackgrounds[textBgIndex].linearGradient,
+              fontIndex: textFontIndex,
+              alignIndex: textAlignIndex,
+              linearGradientIndex: textAlignIndex
             ),
             resultType: ResultType.TEXT
         )

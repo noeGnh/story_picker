@@ -58,12 +58,12 @@ class GalleryProvider extends ChangeNotifier{
       this._files.remove(file);
     }else{
       if (file.type == AssetType.video) {
-        Utils.showToast('La multi-selection ne supporte pas les vidéos.');
+        StoryUtils.showToast('La multi-selection ne supporte pas les vidéos.');
         return;
       }
 
       if (this._files.length >= this._multiSelectLimit) {
-        Utils.showToast('La limite est de ${this._multiSelectLimit} images.');
+        StoryUtils.showToast('La limite est de ${this._multiSelectLimit} images.');
         return;
       }
 
@@ -280,7 +280,7 @@ class GalleryProvider extends ChangeNotifier{
             if (result != null) Navigator.pop(context, result);
 
           } else {
-            Utils.showToast('Cette vidéo est trop longue !');
+            StoryUtils.showToast('Cette vidéo est trop longue !');
           }
 
         } else {
@@ -290,7 +290,7 @@ class GalleryProvider extends ChangeNotifier{
         }
 
       }else{
-        Utils.showToast('Aucun fichier sélectionné');
+        StoryUtils.showToast('Aucun fichier sélectionné');
       }
 
     }

@@ -226,7 +226,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                                       file.duration != null && file.type == AssetType.video ? Positioned(
                                           right: 5,
                                           bottom: 5,
-                                          child: Text(Utils.printDuration(file.duration), style: TextStyle(color: Colors.white),)
+                                          child: Text(StoryUtils.printDuration(file.duration), style: TextStyle(color: Colors.white),)
                                       ) : Container()
                                     ],
                                   ) : Container();

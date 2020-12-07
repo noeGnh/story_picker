@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 import 'package:story_picker/src/providers/text_provider.dart';
+import 'package:story_picker/src/utils/constants.dart';
 import 'package:story_picker/story_picker.dart';
 
 Options options;
@@ -47,7 +48,7 @@ class _TextViewState extends State<TextView> {
 
     return Container(
         decoration: BoxDecoration(
-            gradient: textProvider.textBackgrounds[textProvider.textBgIndex].linearGradient
+            gradient: StoryConstants.textBackgrounds[textProvider.textBgIndex].linearGradient
         ),
         child: Container(
           alignment: isKeyboardVisible ? Alignment.topCenter : Alignment.center,
@@ -58,10 +59,10 @@ class _TextViewState extends State<TextView> {
               controller: textProvider.textEditingController,
               style: TextStyle(
                 fontSize: 30,
-                fontFamily: textProvider.fonts[textProvider.textFontIndex],
-                color: textProvider.textBackgrounds[textProvider.textBgIndex].textColor,
+                fontFamily: StoryConstants.fonts[textProvider.textFontIndex],
+                color: StoryConstants.textBackgrounds[textProvider.textBgIndex].textColor,
               ),
-              textAlign: textProvider.textAlignments[textProvider.textAlignIndex],
+              textAlign: StoryConstants.textAlignments[textProvider.textAlignIndex],
               minFontSize: 16,
               minLines: 1,
               maxLines: 16,
@@ -73,8 +74,8 @@ class _TextViewState extends State<TextView> {
                 enabledBorder: InputBorder.none,
                 disabledBorder: InputBorder.none,
                 hintStyle: TextStyle(
-                  fontFamily: textProvider.fonts[textProvider.textFontIndex],
-                  color: textProvider.textBackgrounds[textProvider.textBgIndex].hintColor,
+                  fontFamily: StoryConstants.fonts[textProvider.textFontIndex],
+                  color: StoryConstants.textBackgrounds[textProvider.textBgIndex].hintColor,
                 ),
                 hintText: "Appuyez pour écrire",
               ),
@@ -256,7 +257,7 @@ class _TextViewState extends State<TextView> {
           decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white, width: 1),
-              gradient: textProvider.textBackgrounds[textProvider.textBgIndex].linearGradient
+              gradient: StoryConstants.textBackgrounds[textProvider.textBgIndex].linearGradient
           ),
         )
       ),

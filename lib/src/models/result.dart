@@ -16,11 +16,23 @@ class StoryText{
 
   LinearGradient linearGradient;
   TextAlign align;
-  Color color;
+  String colorHex;
   String font;
   String text;
+  int fontIndex;
+  int alignIndex;
+  int linearGradientIndex;
 
-  StoryText({this.text, this.color, this.font, this.align, this.linearGradient});
+  StoryText({
+    this.text,
+    this.colorHex,
+    this.font,
+    this.align,
+    this.linearGradient,
+    this.fontIndex,
+    this.alignIndex,
+    this.linearGradientIndex
+  });
 
 }
 
