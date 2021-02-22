@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 class Options{
 
   dynamic settingsTarget;
+  Translations translations;
   CustomizationOptions customizationOptions;
 
   Options({
     this.settingsTarget,
+    Translations translations,
     CustomizationOptions customizationOptions
-  }) : this.customizationOptions = customizationOptions ?? CustomizationOptions();
+  }) : this.translations = translations ?? Translations(),
+       this.customizationOptions = customizationOptions ?? CustomizationOptions();
 
 }
 
@@ -87,6 +90,36 @@ class PreviewScreenCustomization{
     this.iconsColor = Colors.black,
     this.textColor = Colors.black,
     this.bgColor = Colors.white
+  });
+
+}
+
+class Translations{
+
+  String preview;
+  String pressToWrite;
+  String pressAndHoldToRecordAVideo;
+  String multiSelectionDoesntSupportVideos;
+  String filters;
+  String save;
+  String cancel;
+  String recordedVideo;
+  String whatDoYouWantToDo;
+  String delete;
+  String validate;
+
+  Translations({
+    this.preview = 'Preview',
+    this.pressToWrite = 'Press to write',
+    this.pressAndHoldToRecordAVideo = 'Press and hold to record a video',
+    this.multiSelectionDoesntSupportVideos = 'Multi-selection does not support videos',
+    this.filters = 'Filters',
+    this.save = 'Save',
+    this.cancel = 'Cancel',
+    this.recordedVideo = 'Recorded Video',
+    this.whatDoYouWantToDo = 'What do you want to do ?',
+    this.delete = 'Delete',
+    this.validate = 'Validate'
   });
 
 }

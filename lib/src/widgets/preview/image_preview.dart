@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:story_picker/src/models/file_model.dart';
@@ -43,7 +45,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
       child: Stack(
         children: [
           Image.file(
-            _imagePreviewProvider.files.elementAt(index).file,
+            File(_imagePreviewProvider.files.elementAt(index).filePath),
             fit: BoxFit.contain,
           ),
           Positioned(
@@ -116,7 +118,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
       backgroundColor: options.customizationOptions.previewScreenCustomization.bgColor,
       appBar: AppBar(
         elevation: 0.0,
-        title: Text('Aperçu', style: TextStyle(color: options.customizationOptions.previewScreenCustomization.textColor),),
+        title: Text(options.translations.preview, style: TextStyle(color: options.customizationOptions.previewScreenCustomization.textColor),),
         leading: GestureDetector(
           child: Icon(
             Icons.arrow_back,

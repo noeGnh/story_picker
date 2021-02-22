@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
+import 'package:story_picker/src/models/file_model.dart';
 import 'package:story_picker/src/models/folder_model.dart';
 import 'package:story_picker/src/providers/gallery_provider.dart';
 import 'package:story_picker/src/utils/utils.dart';
@@ -41,6 +44,8 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
 
     galleryProvider =  Provider.of<GalleryProvider>(context, listen: false);
     galleryProvider.getFilesPath();
+
+    galleryProvider.translations = options.translations;
   }
 
   @override
@@ -110,10 +115,10 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                           child: Stack(
                             children: [
                               provider.selectedFile.type == AssetType.image ? PhotoView(
-                                imageProvider: FileImage(provider.selectedFile.file),
+                                imageProvider: FileImage(File(provider.selectedFile.filePath)),
                                 backgroundDecoration: BoxDecoration(color: options.customizationOptions.galleryCustomization.bgColor),
                               ) : Chewie(
-                                controller: provider.initVideoController(provider.selectedFile.file),
+                                controller: provider.initVideoController(File(provider.selectedFile.filePath)),
                               ),
                               options.customizationOptions.galleryCustomization.maxSelectable > 1 ? Positioned(
                                   right: 20,
@@ -160,81 +165,15 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                                 itemBuilder: (_, i) {
                                   var file = provider.selectedFolder.files[i];
 
-                                  return file != null ? Stack(
-                                    fit: StackFit.expand,
-                                    children: [
-                                      GestureDetector(
-                                        child: file.type == AssetType.image ? Image.file(
-                                          file.file,
-                                          fit: BoxFit.cover,
-                                        ) : (file.thumbFile != null
-                                            ? Image.file(
-                                          file.thumbFile,
-                                          fit: BoxFit.cover,
-                                        )
-                                            : (file.thumbBytes != null
-                                            ? Image.memory(
-                                          file.thumbBytes,
-                                          fit: BoxFit.cover,
-                                        )
-                                            : Container()
-                                        )
-                                        ),
-                                        onTap: () {
-                                          provider.selectedFile = file;
-                                          if (provider.multiSelect) provider.toggleCheckState(file);
-                                        },
-                                        onLongPress: (){
-
-                                          if (options.customizationOptions.galleryCustomization.maxSelectable <= 1) return;
-
-                                          provider.multiSelect = !provider.multiSelect;
-                                          provider.toggleCheckState(file);
-                                          provider.selectedFile = file;
-
-                                        },
-                                      ),
-                                      provider.multiSelect ? Positioned(
-                                          top: 5,
-                                          right: 5,
-                                          child: GestureDetector(
-                                            child: Container(
-                                              width: 24,
-                                              height: 24,
-                                              padding: EdgeInsets.only(top: 2),
-                                              decoration: new BoxDecoration(
-                                                  color: provider.getCheckState(file) ? options.customizationOptions.accentColor : Colors.white70,
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(width: 1.5, color: options.customizationOptions.galleryCustomization.bgColor)
-                                              ),
-                                              child: provider.getCheckState(file)
-                                                  ? Text(provider.getCheckNumber(file).toString(),
-                                                  style: TextStyle(
-                                                      color: Colors.white
-                                                  ),
-                                                  textAlign: TextAlign.center
-                                              ) : Container(),
-                                            ),
-                                            onTap: (){
-
-                                              provider.toggleCheckState(file);
-                                              provider.selectedFile = file;
-
-                                            },
-                                          )
-                                      ) : Container(),
-                                      file.duration != null && file.type == AssetType.video ? Positioned(
-                                          right: 5,
-                                          bottom: 5,
-                                          child: Text(StoryUtils.printDuration(file.duration), style: TextStyle(color: Colors.white),)
-                                      ) : Container()
-                                    ],
-                                  ) : Container();
+                                  return GalleryItem(
+                                    file: file,
+                                    provider: provider,
+                                  );
 
                                 },
                                 itemCount: provider.selectedFolder.files.length
                             ),
-                    ) : Container();
+                          ) : Container();
 
                   }
               ),
@@ -242,6 +181,98 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
           )
       ),
     );
+  }
+}
+
+class GalleryItem extends StatefulWidget {
+  final FileModel file;
+  final GalleryProvider provider;
+
+  GalleryItem({Key key, this.file, this.provider}) : super(key: key);
+
+  @override
+  _GalleryItemState createState() => _GalleryItemState();
+}
+
+class _GalleryItemState extends State<GalleryItem> with AutomaticKeepAliveClientMixin{
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+
+    return widget.file != null ? Stack(
+      fit: StackFit.expand,
+      children: [
+        GestureDetector(
+          child: File(widget.file.thumbPath) != null
+              ? Image.file(
+            File(widget.file.thumbPath),
+            fit: BoxFit.cover,
+          )
+              : Container(color: Colors.grey),
+          onTap: () {
+            widget.provider.selectedFile = widget.file;
+            if (widget.provider.multiSelect) widget.provider.toggleCheckState(widget.file);
+          },
+          onLongPress: (){
+
+            if (options.customizationOptions.galleryCustomization.maxSelectable == 1) return;
+
+            widget.provider.multiSelect = !widget.provider.multiSelect;
+            widget.provider.toggleCheckState(widget.file);
+            widget.provider.selectedFile = widget.file;
+
+          },
+        ),
+        widget.provider.multiSelect ? Positioned(
+            top: 5,
+            right: 5,
+            child: GestureDetector(
+              child: Container(
+                width: 24,
+                height: 24,
+                padding: EdgeInsets.only(top: 2),
+                decoration: new BoxDecoration(
+                    color: widget.provider.getCheckState(widget.file) ? options.customizationOptions.accentColor : Colors.white70,
+                    shape: BoxShape.circle,
+                    border: Border.all(width: 1.5, color: options.customizationOptions.galleryCustomization.bgColor)
+                ),
+                child: widget.provider.getCheckState(widget.file)
+                    ? Text(widget.provider.getCheckNumber(widget.file).toString(),
+                    style: TextStyle(
+                        color: Colors.white
+                    ),
+                    textAlign: TextAlign.center
+                ) : Container(),
+              ),
+              onTap: (){
+
+                widget.provider.toggleCheckState(widget.file);
+                widget.provider.selectedFile = widget.file;
+
+              },
+            )
+        ) : Container(),
+        widget.file.duration != null && widget.file.type == AssetType.video ? Positioned(
+            right: 5,
+            bottom: 5,
+            child: Text(StoryUtils.printDuration(widget.file.duration), style: TextStyle(color: Colors.white),)
+        ) : Container()
+      ],
+    ) : Container();
   }
 }
 

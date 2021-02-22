@@ -77,7 +77,7 @@ class _TextViewState extends State<TextView> {
                   fontFamily: StoryConstants.fonts[textProvider.textFontIndex],
                   color: StoryConstants.textBackgrounds[textProvider.textBgIndex].hintColor,
                 ),
-                hintText: "Appuyez pour écrire",
+                hintText: options.translations.pressToWrite,
               ),
             )
           ),

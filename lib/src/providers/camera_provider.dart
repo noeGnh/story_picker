@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_better_camera/camera.dart';
+import 'package:logger/logger.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:story_picker/src/models/file_model.dart';
 import 'package:story_picker/src/models/options.dart';
 import 'package:story_picker/src/models/result.dart';
@@ -15,6 +14,8 @@ import 'package:story_picker/src/widgets/text.dart' as textScreen;
 import 'package:super_tooltip/super_tooltip.dart';
 
 class CameraProvider extends ChangeNotifier{
+
+  final Logger logger = Logger();
 
   CameraController controller;
   int selectedCameraIdx;
@@ -26,11 +27,17 @@ class CameraProvider extends ChangeNotifier{
   int _duration;
   int _durationLimit;
 
+  Translations _translations;
+
+  set translations(Translations translations){
+    this._translations = translations;
+  }
+
   FlashMode flashMode = FlashMode.off;
 
   Future<void> onFlashButtonPressed() async {
     switch (flashMode){
-      case FlashMode.torch: flashMode = FlashMode.autoFlash; break;
+      case FlashMode.torch: flashMode = FlashMode.auto; break;
 
       case FlashMode.off: flashMode = FlashMode.torch; break;
 
@@ -58,10 +65,10 @@ class CameraProvider extends ChangeNotifier{
           _initCameraController(cameras[selectedCameraIdx], mounted).then((void v) {});
 
         }else{
-          print("No camera available");
+          logger.w("No camera available");
         }
       }).catchError((e) {
-        print('Error: $e.code\nError Message: $e.message');
+        logger.e('Error: ${e.code}\nError Message: ${e.message}');
       });
 
     });
@@ -73,7 +80,7 @@ class CameraProvider extends ChangeNotifier{
       await controller.dispose();
     }
 
-    controller = CameraController(cameraDescription, ResolutionPreset.veryHigh);
+    controller = CameraController(cameraDescription, ResolutionPreset.high);
 
     controller.addListener(() {
 
@@ -82,14 +89,14 @@ class CameraProvider extends ChangeNotifier{
       }
 
       if (controller.value.hasError) {
-        print('Camera error ${controller.value.errorDescription}');
+        logger.e('Camera error ${controller.value.errorDescription}');
       }
     });
 
     try {
       await controller.initialize();
     } on CameraException catch (e) {
-      print(e);
+      logger.e(e);
     }
 
     if (mounted) {
@@ -113,13 +120,18 @@ class CameraProvider extends ChangeNotifier{
 
     try {
 
-      final path = join((await getTemporaryDirectory()).path, '${DateTime.now()}.png',);
+      String path;
 
-      await controller.takePicture(path);
+      await controller.takePicture().then((XFile file){
+        path = file.path;
+      });
 
       StoryPickerResult result = await Navigator.of(context).push(
           MaterialPageRoute(builder: (ctx) => ImagePreview(
-              files: [FileModel(file: File(path), path: path, title: basename(path))],
+              files: [FileModel(
+                  filePath: path,
+                  title: basename(path)
+              )],
               imagePreviewOptions: options,
               showAddButton: false,
             )
@@ -129,7 +141,7 @@ class CameraProvider extends ChangeNotifier{
       if (result != null) Navigator.pop(context, result);
 
     } catch (e) {
-      print(e);
+      logger.e(e);
     }
 
   }
@@ -143,19 +155,16 @@ class CameraProvider extends ChangeNotifier{
 
     if (!controller.value.isInitialized) return null;
 
-    final filePath = join((await getTemporaryDirectory()).path, '${DateTime.now()}.mp4',);
-
     if (controller.value.isRecordingVideo) return null;
 
     try {
 
       _startTimer(context, mounted);
-      await controller.startVideoRecording(filePath);
-      videoPath = filePath;
+      await controller.startVideoRecording();
 
     } on CameraException catch (e) {
 
-      print(e);
+      logger.e(e);
       videoPath = null;
 
     }
@@ -170,11 +179,16 @@ class CameraProvider extends ChangeNotifier{
 
     try {
 
-      await controller.stopVideoRecording();
+      await controller.stopVideoRecording().then((XFile file){
+
+        videoPath = file.path;
+
+      });
+
       cancelTimer();
 
     } on CameraException catch (e) {
-      print(e);
+      logger.e(e);
     }
 
     if (mounted) notifyListeners();
@@ -185,17 +199,17 @@ class CameraProvider extends ChangeNotifier{
       builder: (BuildContext context) {
 
         return AlertDialog(
-          title: new Text('Vidéo enregistrée', style: TextStyle(fontWeight: FontWeight.bold),),
-          content: new Text('Que voulez-vous faire ?'),
+          title: new Text(this._translations.recordedVideo, style: TextStyle(fontWeight: FontWeight.bold),),
+          content: new Text(this._translations.whatDoYouWantToDo),
           actions: <Widget>[
             new FlatButton(
-                child: new Text('Supprimer'),
+                child: new Text(this._translations.delete),
                 onPressed: (){
                   Navigator.of(context, rootNavigator: true).pop();
                 }
             ),
             new FlatButton(
-                child: new Text('Valider'),
+                child: new Text(this._translations.validate),
                 onPressed: (){
 
                   Navigator.of(context, rootNavigator: true).pop();
@@ -203,7 +217,10 @@ class CameraProvider extends ChangeNotifier{
                   Navigator.pop(
                       context,
                       StoryPickerResult(
-                          pickedFiles: [PickedFile(file: File(videoPath), path: videoPath, name: basename(videoPath))],
+                          pickedFiles: [PickedFile(
+                              path: videoPath,
+                              name: basename(videoPath)
+                          )],
                           resultType: ResultType.VIDEO
                       )
                   );
@@ -241,7 +258,7 @@ class CameraProvider extends ChangeNotifier{
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       notifyListeners();
-      if (_duration > _durationLimit) {
+      if (_duration >= _durationLimit) {
 
         stopVideoRecording(context, mounted);
 
@@ -268,7 +285,7 @@ class CameraProvider extends ChangeNotifier{
     return _duration.toString().length < 2 ? '0$_duration' : '$_duration';
   }
 
-  set durationLimit(int d) { _durationLimit = d <= 59 ? d : 59; }
+  set durationLimit(int d) { _durationLimit = d <= 60 ? d : 60; }
 
   openSettingsScreen(BuildContext context, dynamic target) async {
 

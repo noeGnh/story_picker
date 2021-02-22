@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -19,7 +20,12 @@ import 'package:video_player/video_player.dart';
 
 class GalleryProvider extends ChangeNotifier{
 
+  final Logger logger = Logger();
+
+  static const int VIDEO_LENGTH_LIMIT = 30;
+
   FileModel _selectedFile;
+  Translations _translations;
   FolderModel _selectedFolder;
   List<FileModel> _files = [];
   List<FolderModel> _folders = [];
@@ -27,7 +33,7 @@ class GalleryProvider extends ChangeNotifier{
   int _multiSelectLimit = 5;
   bool _multiSelect = false;
 
-  File oldVideoFile;
+  String oldVideoFilePath;
   ChewieController chewieController;
   VideoPlayerController videoPlayerController;
 
@@ -49,6 +55,8 @@ class GalleryProvider extends ChangeNotifier{
 
   set selectedFile(FileModel file){ this._selectedFile = file; notifyListeners(); }
 
+  set translations(Translations translations){ this._translations = translations; }
+
   getCheckNumber(FileModel file) => this._files.indexOf(file) + 1;
 
   getCheckState(FileModel file) => this._files.contains(file);
@@ -58,12 +66,12 @@ class GalleryProvider extends ChangeNotifier{
       this._files.remove(file);
     }else{
       if (file.type == AssetType.video) {
-        StoryUtils.showToast('La multi-selection ne supporte pas les vidéos.');
+        StoryUtils.showToast(this._translations.multiSelectionDoesntSupportVideos);
         return;
       }
 
       if (this._files.length >= this._multiSelectLimit) {
-        StoryUtils.showToast('La limite est de ${this._multiSelectLimit} images.');
+        logger.w('The limit is ${this._multiSelectLimit} images.');
         return;
       }
 
@@ -74,7 +82,7 @@ class GalleryProvider extends ChangeNotifier{
 
   ChewieController initVideoController(File file) {
 
-    if (oldVideoFile == null || oldVideoFile != file) {
+    if (oldVideoFilePath == null || File(oldVideoFilePath) != file) {
 
       VideoPlayerController videoPlayerController = VideoPlayerController.file(file);
 
@@ -87,7 +95,7 @@ class GalleryProvider extends ChangeNotifier{
         looping: false,
       );
 
-      this.oldVideoFile = file;
+      this.oldVideoFilePath = file.path;
       this.chewieController = chewieController;
       this.videoPlayerController = videoPlayerController;
 
@@ -132,7 +140,7 @@ class GalleryProvider extends ChangeNotifier{
           filterOption: FilterOptionGroup()
             ..setOption(AssetType.video, FilterOption(
                 durationConstraint: const DurationConstraint(
-                  max: Duration(hours: 1),
+                  max: Duration(minutes: VIDEO_LENGTH_LIMIT),
                 )
             ))
       );
@@ -147,42 +155,35 @@ class GalleryProvider extends ChangeNotifier{
         await Future.wait(
             assetList.map((asset) async {
 
-              File f = await asset.file; File thumbFile; Uint8List thumbBytes;
+              File f = await asset.file; File thumbFile;
 
               if (asset.type != AssetType.image && asset.type != AssetType.video) return;
 
-              if (asset.type == AssetType.video) {
+              try{
 
-                try{
+                String thumbPath = '$cacheDir/${basename(f.path).split('.')[0] + (asset.type == AssetType.video ? '.mp4' : '')}.jpg';
 
-                  String thumbPath = '$cacheDir/${basename(f.path).split('.')[0]}.png';
+                if (await File(thumbPath).exists()) {
 
-                  if (await File(thumbPath).exists()) {
+                  thumbFile = File(thumbPath);
 
-                    thumbFile = File(thumbPath);
+                } else {
 
-                  } else {
+                  Uint8List thumbBytes = await asset.thumbData;
 
-                    thumbBytes = await asset.thumbData;
+                  thumbFile = await File(thumbPath).create(recursive: true);
 
-                    final thumbFile = await File(thumbPath).create(recursive: true);
+                  thumbFile = await thumbFile.writeAsBytes(thumbBytes);
 
-                    await thumbFile.writeAsBytes(thumbBytes);
+                  assert(thumbFile != null);
 
-                    assert(thumbFile != null);
-
-                  }
-
-                }catch(e){
-                  print(e);
                 }
 
+              }catch(e){
+                print(e);
               }
 
               fileList.add(FileModel(
-                  file: f,
-                  thumbFile: thumbFile,
-                  thumbBytes: thumbBytes,
                   duration: asset.videoDuration,
                   type: asset.type,
                   size: asset.size,
@@ -194,7 +195,8 @@ class GalleryProvider extends ChangeNotifier{
                   longitude: asset.longitude,
                   title: asset.title,
                   relativePath: asset.relativePath,
-                  path: f.path
+                  filePath: f.path,
+                  thumbPath: thumbFile.path
               ));
 
             }).toList()
@@ -263,7 +265,7 @@ class GalleryProvider extends ChangeNotifier{
 
         if (this._selectedFile.type == AssetType.video) {
 
-          if (this._selectedFile.duration != null && this._selectedFile.duration.inMinutes < 10) {
+          if (this._selectedFile.duration != null && this._selectedFile.duration.inMinutes < VIDEO_LENGTH_LIMIT) {
 
             Future.delayed(Duration(milliseconds: 1000), () async { pauseVideo(); });
 
@@ -280,7 +282,7 @@ class GalleryProvider extends ChangeNotifier{
             if (result != null) Navigator.pop(context, result);
 
           } else {
-            StoryUtils.showToast('Cette vidéo est trop longue !');
+            logger.w('Too long video !');
           }
 
         } else {
@@ -290,7 +292,7 @@ class GalleryProvider extends ChangeNotifier{
         }
 
       }else{
-        StoryUtils.showToast('Aucun fichier sélectionné');
+        logger.i('No file selected');
       }
 
     }

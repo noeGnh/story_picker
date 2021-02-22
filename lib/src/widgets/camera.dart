@@ -1,16 +1,18 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_better_camera/camera.dart';
 import 'package:provider/provider.dart';
 import 'package:story_picker/src/models/options.dart';
 import 'package:story_picker/src/providers/camera_provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
 import 'package:torch_compat/torch_compat.dart';
 
+Options options;
+
 class Camera extends StatefulWidget {
 
-  final Options options;
-
-  Camera({Key key, this.options}) : super(key: key);
+  Camera({Key key, @required Options cameraOptions}) : super(key: key) {
+    options = cameraOptions;
+  }
 
   @override
   _CameraState createState() => _CameraState();
@@ -28,7 +30,8 @@ class _CameraState extends State<Camera> {
     cameraProvider =  Provider.of<CameraProvider>(context, listen: false);
     cameraProvider.getAvailableCameras(mounted);
 
-    cameraProvider.durationLimit = widget.options.customizationOptions.videoDurationLimitInSeconds;
+    cameraProvider.translations = options.translations;
+    cameraProvider.durationLimit = options.customizationOptions.videoDurationLimitInSeconds;
   }
 
   @override
@@ -36,165 +39,23 @@ class _CameraState extends State<Camera> {
     super.dispose();
   }
 
-  IconData _getCameraLensIcon(CameraLensDirection direction) {
-    switch (direction) {
-      case CameraLensDirection.back:
-        return Icons.camera_rear;
-      case CameraLensDirection.front:
-        return Icons.camera_front;
-      case CameraLensDirection.external:
-        return Icons.camera;
-      default:
-        return Icons.device_unknown;
-    }
-  }
-
-  Widget _cameraPreviewWidget(Size size, num deviceRatio) {
-
-    if (cameraProvider.controller == null || !cameraProvider.controller.value.isInitialized) {
-      return Container(color: Colors.transparent);
-    }
-
-    return Transform.scale(
-      scale: cameraProvider.controller.value.aspectRatio / deviceRatio,
-      child: Center(
-        child: AspectRatio(
-          aspectRatio: cameraProvider.controller.value.aspectRatio,
-          child: CameraPreview(cameraProvider.controller),
-        ),
-      ),
-    );
-
-  }
-
-  Widget _galleryIconWidget(){
-
-    return GestureDetector(
-      child: Padding(
-        padding: EdgeInsets.only(left: 21),
-        child: Icon(Icons.image, color: widget.options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
-      ),
-      onTap: (){
-        cameraProvider.openGalleryScreen(context, widget.options);
-      },
-    );
-
-  }
-
-  Widget _textIconWidget(){
-
-    return GestureDetector(
-      child: Icon(Icons.text_fields, color: widget.options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
-      onTap: (){
-        cameraProvider.openTextScreen(context, widget.options);
-      },
-    );
-
-  }
-
-  Widget _cameraToggleIconWidget() {
-    if (cameraProvider.cameras == null || cameraProvider.cameras.isEmpty) {
-      return Padding(
-        padding: EdgeInsets.only(right: 21),
-        child: Icon(_getCameraLensIcon(null), color: widget.options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
-      );
-    }
-
-    CameraDescription selectedCamera = cameraProvider.cameras[cameraProvider.selectedCameraIdx];
-    CameraLensDirection lensDirection = selectedCamera.lensDirection;
-
-    return GestureDetector(
-      child: Padding(
-        padding: EdgeInsets.only(right: 21),
-        child: Icon(_getCameraLensIcon(lensDirection), color: widget.options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
-      ),
-      onTap: (){
-        cameraProvider.onSwitchCamera(mounted);
-      },
-    );
-  }
-
-  Widget _settingsIconWidget(){
-
-    return GestureDetector(
-      child: Padding(
-        padding: EdgeInsets.only(left: 21),
-        child: Icon(Icons.settings, color: widget.options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
-      ),
-      onTap: (){
-        cameraProvider.openSettingsScreen(context, widget.options.settingsTarget);
-      },
-    );
-
-  }
-
-  Widget _flashToggleIconWidget() {
-
-    IconData iconData;
-
-    switch(cameraProvider.flashMode){
-      case FlashMode.autoFlash:  iconData = Icons.flash_auto; break;
-
-      case FlashMode.torch: iconData = Icons.flash_on; break;
-
-      default:  iconData = Icons.flash_off;
-    }
-
-    return FutureBuilder<bool>(
-        future: TorchCompat.hasTorch,
-        builder: (ctx, snapshot){
-
-          return snapshot.hasData && snapshot.data
-              ? GestureDetector(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: widget.options.settingsTarget != null ? 0 : 21),
-                    child: Icon(iconData, color: widget.options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
-                  ),
-                  onTap: (){
-                    if (cameraProvider.controller != null && cameraProvider.controller.value.isInitialized){
-                      cameraProvider.onFlashButtonPressed();
-                    }
-                  },
-              )
-              : Spacer();
-
-        }
-    );
-
-  }
-
-  Widget _closeIconWidget(){
-
-    return GestureDetector(
-      child: Padding(
-        padding: EdgeInsets.only(right: 21),
-        child: Icon(Icons.close, color: widget.options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
-      ),
-      onTap: (){
-        Navigator.pop(context, null);
-      },
-    );
-
-  }
-
   @override
   Widget build(BuildContext context) {
 
     final size = MediaQuery.of(context).size;
-    final deviceRatio = size.width / size.height;
 
     return Consumer<CameraProvider>(
         builder: (ctx, provider, child){
           return Stack(
             children: <Widget>[
-              _cameraPreviewWidget(size, deviceRatio),
+              CameraPreviewWidget(),
               cameraProvider.isRecordingVideo() ? Positioned(
                 top: 28,
                 child: Container(
                   width: size.width,
                   child: LinearProgressIndicator(
                     value: provider.getIndicatorProgress(),
-                    valueColor: AlwaysStoppedAnimation<Color>(widget.options.customizationOptions.cameraCustomization.videoCaptureProgressIndicatorColor),
+                    valueColor: AlwaysStoppedAnimation<Color>(options.customizationOptions.cameraCustomization.videoCaptureProgressIndicatorColor),
                     backgroundColor: Colors.transparent,
                   ),
                 ),
@@ -208,9 +69,9 @@ class _CameraState extends State<Camera> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        widget.options.settingsTarget != null ? _settingsIconWidget() : _flashToggleIconWidget(),
-                        widget.options.settingsTarget != null ? _flashToggleIconWidget() : Container(),
-                        _closeIconWidget(),
+                        options.settingsTarget != null ? SettingsIconWidget() : FlashToggleIconWidget(),
+                        options.settingsTarget != null ? FlashToggleIconWidget() : Container(),
+                        CloseIconWidget(),
                       ],
                     ),
                 ),
@@ -223,16 +84,16 @@ class _CameraState extends State<Camera> {
                   child: Column(
                     children: [
                       Center(
-                        child: CaptureControl(cameraProvider, widget.options),
+                        child: CaptureControl(cameraProvider),
                       ),
                       SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          _galleryIconWidget(),
-                          _textIconWidget(),
-                          _cameraToggleIconWidget(),
+                          GalleryIconWidget(),
+                          TextIconWidget(),
+                          CameraToggleIconWidget(mounted),
                         ],
                       ),
                     ],
@@ -248,11 +109,192 @@ class _CameraState extends State<Camera> {
 
 }
 
+class CameraPreviewWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    final size = MediaQuery.of(context).size;
+
+    CameraProvider cameraProvider =  Provider.of<CameraProvider>(context, listen: true);
+
+    if (cameraProvider.controller == null || !cameraProvider.controller.value.isInitialized) {
+      return Container(color: Colors.transparent);
+    }
+
+    var scale = size.aspectRatio * cameraProvider.controller.value.aspectRatio;
+
+    if (scale < 1) scale = 1 / scale;
+
+    return Transform.scale(
+      scale: scale,
+      child: Center(
+        child: CameraPreview(cameraProvider.controller),
+      ),
+    );
+
+  }
+}
+
+class GalleryIconWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    CameraProvider cameraProvider =  Provider.of<CameraProvider>(context, listen: true);
+
+    return GestureDetector(
+      child: Padding(
+        padding: EdgeInsets.only(left: 21),
+        child: Icon(Icons.image, color: options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
+      ),
+      onTap: (){
+        cameraProvider.openGalleryScreen(context, options);
+      },
+    );
+
+  }
+}
+
+class TextIconWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    CameraProvider cameraProvider =  Provider.of<CameraProvider>(context, listen: true);
+
+    return GestureDetector(
+      child: Icon(Icons.text_fields, color: options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
+      onTap: (){
+        cameraProvider.openTextScreen(context, options);
+      },
+    );
+
+  }
+}
+
+class CameraToggleIconWidget extends StatelessWidget {
+
+  final bool mounted;
+
+  IconData _getCameraLensIcon(CameraLensDirection direction) {
+    switch (direction) {
+      case CameraLensDirection.back:
+        return Icons.camera_rear;
+      case CameraLensDirection.front:
+        return Icons.camera_front;
+      case CameraLensDirection.external:
+        return Icons.camera;
+      default:
+        return Icons.device_unknown;
+    }
+  }
+
+  CameraToggleIconWidget(this.mounted);
+
+  @override
+  Widget build(BuildContext context) {
+
+    CameraProvider cameraProvider =  Provider.of<CameraProvider>(context, listen: true);
+
+    if (cameraProvider.cameras == null || cameraProvider.cameras.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.only(right: 21),
+        child: Icon(_getCameraLensIcon(null), color: options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
+      );
+    }
+
+    CameraDescription selectedCamera = cameraProvider.cameras[cameraProvider.selectedCameraIdx];
+    CameraLensDirection lensDirection = selectedCamera.lensDirection;
+
+    return GestureDetector(
+      child: Padding(
+        padding: EdgeInsets.only(right: 21),
+        child: Icon(_getCameraLensIcon(lensDirection), color: options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
+      ),
+      onTap: (){
+        cameraProvider.onSwitchCamera(mounted);
+      },
+    );
+
+  }
+}
+
+class SettingsIconWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    CameraProvider cameraProvider =  Provider.of<CameraProvider>(context, listen: true);
+
+    return GestureDetector(
+      child: Padding(
+        padding: EdgeInsets.only(left: 21),
+        child: Icon(Icons.settings, color: options.customizationOptions.cameraCustomization.iconsColor, size: 32),
+      ),
+      onTap: (){
+        cameraProvider.openSettingsScreen(context, options.settingsTarget);
+      },
+    );
+
+  }
+}
+
+class FlashToggleIconWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    CameraProvider cameraProvider =  Provider.of<CameraProvider>(context, listen: true);
+
+    IconData iconData;
+
+    switch(cameraProvider.flashMode){
+      case FlashMode.auto:  iconData = Icons.flash_auto; break;
+
+      case FlashMode.torch: iconData = Icons.flash_on; break;
+
+      default:  iconData = Icons.flash_off;
+    }
+
+    return FutureBuilder<bool>(
+        future: TorchCompat.hasTorch,
+        builder: (ctx, snapshot){
+
+          return snapshot.hasData && snapshot.data
+              ? GestureDetector(
+                child: Padding(
+                  padding: EdgeInsets.only(left: options.settingsTarget != null ? 0 : 21),
+                  child: Icon(iconData, color: options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
+                ),
+                onTap: (){
+                  if (cameraProvider.controller != null && cameraProvider.controller.value.isInitialized){
+                    cameraProvider.onFlashButtonPressed();
+                  }
+                },
+              )
+              : Spacer();
+
+        }
+    );
+
+  }
+}
+
+class CloseIconWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      child: Padding(
+        padding: EdgeInsets.only(right: 21),
+        child: Icon(Icons.close, color: options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
+      ),
+      onTap: (){
+        Navigator.pop(context, null);
+      },
+    );
+  }
+}
+
 class CaptureControl extends StatefulWidget {
   final CameraProvider cameraProvider;
-  final Options options;
 
-  CaptureControl(this.cameraProvider, this.options, {Key key}) : super(key: key);
+  CaptureControl(this.cameraProvider, {Key key}) : super(key: key);
 
   @override
   _CaptureControlState createState() => _CaptureControlState();
@@ -267,7 +309,7 @@ class _CaptureControlState extends State<CaptureControl> {
     hasShadow: false,
     content: Material(
       child: Text(
-        "Appuyez longuement pour enregistrer une vidéo",
+        options.translations.pressAndHoldToRecordAVideo,
         softWrap: true,
       ),
     ),
@@ -278,7 +320,9 @@ class _CaptureControlState extends State<CaptureControl> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+
       widget.cameraProvider.manageTooltip(context, superTooltip);
+
     });
   }
 
@@ -292,7 +336,7 @@ class _CaptureControlState extends State<CaptureControl> {
             "00:${widget.cameraProvider.showDuration()}",
             textAlign: TextAlign.center,
             style: TextStyle(
-                color: widget.options.customizationOptions.cameraCustomization.iconsColor,
+                color: options.customizationOptions.cameraCustomization.iconsColor,
                 decoration: TextDecoration.none,
                 fontSize: 15
             ),
@@ -318,12 +362,12 @@ class _CaptureControlState extends State<CaptureControl> {
                       height: 68,
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: widget.options.customizationOptions.cameraCustomization.iconsColor
+                          color: options.customizationOptions.cameraCustomization.iconsColor
                       ),
                     ),
                     onLongPressStart: (d) => widget.cameraProvider.startVideoRecording(context, mounted),
                     onLongPressEnd: (d) => widget.cameraProvider.stopVideoRecording(context, mounted),
-                    onTap: () => widget.cameraProvider.onCapturePressed(context, widget.options),
+                    onTap: () => widget.cameraProvider.onCapturePressed(context, options),
                   ),
                 )
             )

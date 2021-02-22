@@ -58,7 +58,7 @@ class PickerView extends StatefulWidget {
 class _PickerViewState extends State<PickerView> {
   @override
   Widget build(BuildContext context) {
-    return Camera(options: widget.options);
+    return Camera(cameraOptions : widget.options);
   }
 }
 

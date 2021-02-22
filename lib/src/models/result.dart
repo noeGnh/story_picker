@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 class StoryPickerResult{
@@ -38,11 +36,10 @@ class StoryText{
 
 class PickedFile{
 
-  File file;
   String path;
   String name;
 
-  PickedFile({this.file, this.path, this.name});
+  PickedFile({this.path, this.name});
 
 }
 

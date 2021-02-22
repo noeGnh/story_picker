@@ -14,11 +14,14 @@ class ImagePreviewProvider extends ChangeNotifier{
 
   List<FileModel> files = [];
 
+  Translations _translations;
+
+  set translations(Translations translations) { this._translations = translations; }
+
   _updateFiles(FileModel file, File resultFile){
 
     int index = this.files.indexOf(file);
-    file.file = resultFile;
-    file.path = resultFile.path;
+    file.filePath = resultFile.path;
     this.files[index] = file;
 
     notifyListeners();
@@ -27,17 +30,19 @@ class ImagePreviewProvider extends ChangeNotifier{
 
   addFilter(BuildContext context, FileModel file, Options options) async {
 
-    var image = imageLib.decodeImage(file.file.readAsBytesSync());
+    var f = File(file.filePath);
+
+    var image = imageLib.decodeImage(f.readAsBytesSync());
     image = imageLib.copyResize(image, width: 600);
 
     Map filterResult = await Navigator.push(
       context,
       new MaterialPageRoute(
         builder: (context) => PhotoFilterSelector(
-          title: Text('Filtres', style: TextStyle(color: options.customizationOptions.previewScreenCustomization.iconsColor),),
+          title: Text(this._translations.filters, style: TextStyle(color: options.customizationOptions.previewScreenCustomization.iconsColor),),
           image: image,
           filters: presetFiltersList,
-          filename: basename(file.path),
+          filename: basename(file.filePath),
           appBarColor: options.customizationOptions.appBarColor,
           appBarIconsColor: options.customizationOptions.previewScreenCustomization.iconsColor,
           loader: Center(child: CircularProgressIndicator(backgroundColor: options.customizationOptions.previewScreenCustomization.iconsColor,)),
@@ -63,7 +68,7 @@ class ImagePreviewProvider extends ChangeNotifier{
   edit(FileModel file, Options options) async {
 
     File editResult = await ImageCropper.cropImage(
-        sourcePath: file.path,
+        sourcePath: file.filePath,
         cropStyle: CropStyle.rectangle,
         compressFormat: ImageCompressFormat.png,
         aspectRatioPresets: [
@@ -87,8 +92,8 @@ class ImagePreviewProvider extends ChangeNotifier{
         iosUiSettings: IOSUiSettings(
             minimumAspectRatio: 1.0,
             title: '',
-            doneButtonTitle: 'Enregistrer',
-            cancelButtonTitle: 'Annuler'
+            doneButtonTitle: this._translations.save,
+            cancelButtonTitle: this._translations.cancel
         )
     );
 
@@ -106,7 +111,10 @@ class ImagePreviewProvider extends ChangeNotifier{
 
     if (files != null){
       files.map((file) {
-        pickedFiles.add(PickedFile(file: file.file, path: file.path, name: basename(file.path)));
+        pickedFiles.add(PickedFile(
+            path: file.filePath,
+            name: basename(file.filePath)
+        ));
       }).toList();
 
       Navigator.pop(context, StoryPickerResult(pickedFiles: pickedFiles, resultType: ResultType.IMAGE));

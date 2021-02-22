@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:story_picker/src/models/file_model.dart';
 import 'package:story_picker/src/models/result.dart';
@@ -8,6 +9,7 @@ import 'package:video_trimmer/video_trimmer.dart';
 
 class VideoPreviewProvider extends ChangeNotifier{
 
+  final Logger _logger = Logger();
   final Trimmer _trimmer = Trimmer();
 
   double _startValue = 0.0;
@@ -36,7 +38,7 @@ class VideoPreviewProvider extends ChangeNotifier{
 
   List<FileModel> files;
 
-  loadVideoTrimmer() async => await _trimmer.loadVideo(videoFile: files[0].file);
+  loadVideoTrimmer() async => await _trimmer.loadVideo(videoFile: File(files[0].filePath));
 
   submit(BuildContext context) async {
 
@@ -47,7 +49,7 @@ class VideoPreviewProvider extends ChangeNotifier{
       startValue: _startValue,
       endValue: _endValue,
       onProgress: (progress) {
-        print('Save Trimmed Video Progress - ${progress.toString()}');
+        _logger.i('Save Trimmed Video Progress - ${progress.toString()}');
       },
     ).then((value) {
 
@@ -57,7 +59,10 @@ class VideoPreviewProvider extends ChangeNotifier{
 
       if (files != null){
         files.map((file) {
-          pickedFiles.add(PickedFile(file: File(value), path: value, name: basename(value)));
+          pickedFiles.add(PickedFile(
+              path: value,
+              name: basename(value)
+          ));
         }).toList();
 
         Navigator.pop(context, StoryPickerResult(pickedFiles: pickedFiles, resultType: ResultType.VIDEO));

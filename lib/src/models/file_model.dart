@@ -1,15 +1,10 @@
-import 'dart:io';
 
 import 'dart:ui';
-import 'dart:typed_data';
 
 import 'package:photo_manager/photo_manager.dart';
 
 class FileModel{
 
-  File file;
-  File thumbFile;
-  Uint8List thumbBytes;
   AssetType type;
   Duration duration;
   Size size;
@@ -23,10 +18,10 @@ class FileModel{
   String mediaUrl;
   String title;
   String relativePath;
-  String path;
+  String filePath;
+  String thumbPath;
 
-  FileModel({this.file, this.thumbFile, this.thumbBytes, this.duration, this.type, this.size, this.width,
-    this.height, this.createDt, this.modifiedDt, this.latitude, this.longitude,
-    this.ll, this.mediaUrl, this.title, this.relativePath, this.path});
+  FileModel({this.duration, this.type, this.size, this.width, this.height, this.createDt, this.modifiedDt,
+    this.latitude, this.longitude, this.ll, this.mediaUrl, this.title, this.relativePath, this.filePath, this.thumbPath});
 
 }
