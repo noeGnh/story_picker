@@ -80,7 +80,7 @@ class CameraProvider extends ChangeNotifier{
       await controller.dispose();
     }
 
-    controller = CameraController(cameraDescription, ResolutionPreset.high);
+    controller = CameraController(cameraDescription, ResolutionPreset.medium);
 
     controller.addListener(() {
 
