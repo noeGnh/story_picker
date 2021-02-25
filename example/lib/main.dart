@@ -31,7 +31,7 @@ class Content extends StatefulWidget {
 
 class _ContentState extends State<Content> {
 
-  File image;
+  String imagePath;
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +44,19 @@ class _ContentState extends State<Content> {
           Container(
             width: 300,
             height: 300,
-            child: image != null ? Image.file(image) : Container(),
+            child: imagePath != null ? Image.file(File(imagePath)) : Container(),
           ),
           RaisedButton(
             onPressed: () async {
-              await StoryPicker.pick(context,
+              var result = await StoryPicker.pick(context,
                   transitionType: PageTransitionType.leftToRight,
                   options: Options(
                       settingsTarget: Settings()
                   )
               );
-              setState(() {});
+              setState(() {
+                imagePath = result != null ? result.pickedFiles[0].path : null;
+              });
             },
             child: Text('Pick It'),
           )

@@ -110,6 +110,8 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
 
     _imagePreviewProvider =  Provider.of<ImagePreviewProvider>(context, listen: false);
     _imagePreviewProvider.files = widget.files;
+
+    _imagePreviewProvider.translations = options.translations;
   }
 
   @override
