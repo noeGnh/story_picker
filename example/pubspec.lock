@@ -160,6 +160,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0"
+  flutter_image_compress:
+    dependency: transitive
+    description:
+      name: flutter_image_compress
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.7.0"
   flutter_keyboard_visibility:
     dependency: transitive
     description:
@@ -449,7 +456,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.4+1"
+    version: "0.0.4+2"
   stream_channel:
     dependency: transitive
     description:
@@ -540,7 +547,7 @@ packages:
       name: video_thumbnail
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.5"
+    version: "0.2.5+1"
   video_trimmer:
     dependency: transitive
     description:

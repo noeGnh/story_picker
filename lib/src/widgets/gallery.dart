@@ -114,12 +114,9 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                           color: options.customizationOptions.galleryCustomization.bgColor,
                           child: Stack(
                             children: [
-                              provider.selectedFile.type == AssetType.image ? PhotoView(
-                                imageProvider: FileImage(File(provider.selectedFile.filePath)),
-                                backgroundDecoration: BoxDecoration(color: options.customizationOptions.galleryCustomization.bgColor),
-                              ) : Chewie(
-                                controller: provider.initVideoController(File(provider.selectedFile.filePath)),
-                              ),
+                              provider.selectedFile.type == AssetType.image
+                                  ? GalleryImagePreview(provider)
+                                  : GalleryVideoPreview(),
                               options.customizationOptions.galleryCustomization.maxSelectable > 1 ? Positioned(
                                   right: 20,
                                   bottom: provider.selectedFile.type == AssetType.video ? 50 : 5,
@@ -182,6 +179,51 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
       ),
     );
   }
+}
+
+class GalleryImagePreview extends StatelessWidget {
+  final GalleryProvider provider;
+
+  GalleryImagePreview(this.provider);
+
+  @override
+  Widget build(BuildContext context) {
+    return PhotoView(
+      imageProvider: FileImage(File(provider.selectedFile.filePath)),
+      backgroundDecoration: BoxDecoration(color: options.customizationOptions.galleryCustomization.bgColor),
+    );
+  }
+}
+
+class GalleryVideoPreview extends StatefulWidget {
+  @override
+  _GalleryVideoPreviewState createState() => _GalleryVideoPreviewState();
+}
+
+class _GalleryVideoPreviewState extends State<GalleryVideoPreview> {
+
+  GalleryProvider provider;
+
+  @override
+  void initState() {
+    provider = Provider.of<GalleryProvider>(context, listen: false);
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    provider.disposeVideoController();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    provider.initVideoController(File(provider.selectedFile.filePath));
+
+    return Chewie(controller: provider.chewieController);
+  }
+
 }
 
 class GalleryItem extends StatefulWidget {

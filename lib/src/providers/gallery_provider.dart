@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:logger/logger.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path/path.dart';
@@ -17,6 +18,7 @@ import 'package:story_picker/src/utils/utils.dart';
 import 'package:story_picker/src/widgets/preview/image_preview.dart';
 import 'package:story_picker/src/widgets/preview/video_preview.dart';
 import 'package:video_player/video_player.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class GalleryProvider extends ChangeNotifier{
 
@@ -80,17 +82,19 @@ class GalleryProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  ChewieController initVideoController(File file) {
+  void initVideoController(File file) {
 
     if (oldVideoFilePath == null || File(oldVideoFilePath) != file) {
 
       VideoPlayerController videoPlayerController = VideoPlayerController.file(file);
 
+      videoPlayerController.setVolume(0.0);
+
       ChewieController chewieController = ChewieController(
         videoPlayerController: videoPlayerController,
         allowedScreenSleep: false,
         allowFullScreen: false,
-        aspectRatio: 3 / 2,
+        aspectRatio: 1,
         autoPlay: true,
         looping: false,
       );
@@ -99,11 +103,7 @@ class GalleryProvider extends ChangeNotifier{
       this.chewieController = chewieController;
       this.videoPlayerController = videoPlayerController;
 
-      return chewieController;
-
     }
-
-    return this.chewieController;
 
   }
 
@@ -152,58 +152,78 @@ class GalleryProvider extends ChangeNotifier{
         List<FileModel> fileList = [];
         List<AssetEntity> assetList = await path.assetList;
 
-        await Future.wait(
-            assetList.map((asset) async {
+        for(int y = 0; y < assetList.length; y++){
 
-              File file = await asset.file; File thumbFile;
+          File file = await assetList[y].file; File thumbFile;
 
-              if (asset.type != AssetType.image && asset.type != AssetType.video) return;
+          if (assetList[y].type != AssetType.image && assetList[y].type != AssetType.video) return;
 
-              try{
+          if (!['.mp4', '.mov', '.png', '.jpg', '.jpeg', '.gif'].contains(extension(file.path).toLowerCase())) return;
 
-                String thumbName =
-                  (basename(file.path).split('.')[0] + path.id +
-                  (asset.type == AssetType.video ? '.mp4' : '')).replaceAll(' ', '');
-                String thumbPath = '$cacheDir/$thumbName.jpg';
+          try{
 
-                if (await File(thumbPath).exists()) {
+            String thumbName =
+            (basename(file.path).split('.')[0] + path.id +
+            (assetList[y].type == AssetType.video ? '.mp4' : '')).replaceAll(' ', '');
+            String thumbPath = '$cacheDir/$thumbName.jpg';
 
-                  thumbFile = File(thumbPath);
+            if (await File(thumbPath).exists()) {
 
-                } else {
+              thumbFile = File(thumbPath);
 
-                  Uint8List thumbBytes = await asset.thumbData;
+            } else {
 
-                  thumbFile = await File(thumbPath).create(recursive: true);
+              Uint8List thumbBytes;
 
-                  thumbFile = await thumbFile.writeAsBytes(thumbBytes);
+              if (assetList[y].type == AssetType.video){
 
-                  assert(thumbFile != null);
+                thumbBytes = await VideoThumbnail.thumbnailData(
+                  video: file.path,
+                  imageFormat: ImageFormat.JPEG,
+                  maxWidth: 128,
+                  quality: 95,
+                );
 
-                }
+              }else{
 
-              }catch(e){
-                print(e);
+                thumbBytes = await FlutterImageCompress.compressWithFile(
+                  file.path,
+                  minHeight: 144,
+                  minWidth: 144,
+                  quality: 95,
+                );
+
               }
 
-              fileList.add(FileModel(
-                  duration: asset.videoDuration,
-                  type: asset.type,
-                  size: asset.size,
-                  width: asset.width,
-                  height: asset.height,
-                  createDt: asset.createDateTime,
-                  modifiedDt: asset.modifiedDateTime,
-                  latitude: asset.latitude,
-                  longitude: asset.longitude,
-                  title: asset.title,
-                  relativePath: asset.relativePath,
-                  filePath: file.path,
-                  thumbPath: thumbFile.path
-              ));
+              thumbFile = await File(thumbPath).create(recursive: true);
 
-            }).toList()
-        );
+              thumbFile = await thumbFile.writeAsBytes(thumbBytes);
+
+              assert(thumbFile != null);
+
+            }
+
+          }catch(e){
+            print(e);
+          }
+
+          fileList.add(FileModel(
+              duration: assetList[y].videoDuration,
+              type: assetList[y].type,
+              size: assetList[y].size,
+              width: assetList[y].width,
+              height: assetList[y].height,
+              createDt: assetList[y].createDateTime,
+              modifiedDt: assetList[y].modifiedDateTime,
+              latitude: assetList[y].latitude,
+              longitude: assetList[y].longitude,
+              title: assetList[y].title,
+              relativePath: assetList[y].relativePath,
+              filePath: file.path,
+              thumbPath: thumbFile.path
+          ));
+
+        }
 
         if (fileList.isEmpty) return;
 
