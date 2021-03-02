@@ -156,89 +156,95 @@ class GalleryProvider extends ChangeNotifier{
 
           File file = await assetList[y].file; File thumbFile;
 
-          if (assetList[y].type != AssetType.image && assetList[y].type != AssetType.video) return;
+          if (assetList[y].type == AssetType.image || assetList[y].type == AssetType.video) {
 
-          if (!['.mp4', '.png', '.jpg', '.jpeg', '.gif'].contains(extension(file.path).toLowerCase())) return;
+            if (['.mp4', '.png', '.jpg', '.jpeg', '.gif'].contains(extension(file.path).toLowerCase())) {
 
-          try{
+              try{
 
-            String thumbName =
-            (basename(file.path).split('.')[0] + path.id +
-            (assetList[y].type == AssetType.video ? '.mp4' : '')).replaceAll(' ', '');
-            String thumbPath = '$cacheDir/$thumbName.jpg';
+                String thumbName =
+                (basename(file.path).split('.')[0] + path.id +
+                    (assetList[y].type == AssetType.video ? '.mp4' : '')).replaceAll(' ', '');
+                String thumbPath = '$cacheDir/$thumbName.jpg';
 
-            if (await File(thumbPath).exists()) {
+                if (await File(thumbPath).exists()) {
 
-              thumbFile = File(thumbPath);
+                  thumbFile = File(thumbPath);
 
-            } else {
+                } else {
 
-              Uint8List thumbBytes;
+                  Uint8List thumbBytes;
 
-              if (assetList[y].type == AssetType.video){
+                  if (assetList[y].type == AssetType.video){
 
-                thumbBytes = await VideoThumbnail.thumbnailData(
-                  video: file.path,
-                  imageFormat: ImageFormat.JPEG,
-                  maxWidth: 128,
-                  quality: 95,
-                );
+                    thumbBytes = await VideoThumbnail.thumbnailData(
+                      video: file.path,
+                      imageFormat: ImageFormat.JPEG,
+                      maxWidth: 128,
+                      quality: 95,
+                    );
 
-              }else{
+                  }else{
 
-                thumbBytes = await FlutterImageCompress.compressWithFile(
-                  file.path,
-                  minHeight: 144,
-                  minWidth: 144,
-                  quality: 95,
-                );
+                    thumbBytes = await FlutterImageCompress.compressWithFile(
+                      file.path,
+                      minHeight: 144,
+                      minWidth: 144,
+                      quality: 95,
+                    );
 
+                  }
+
+                  thumbFile = await File(thumbPath).create(recursive: true);
+
+                  thumbFile = await thumbFile.writeAsBytes(thumbBytes);
+
+                  assert(thumbFile != null);
+
+                }
+
+              }catch(e){
+                print(e);
               }
 
-              thumbFile = await File(thumbPath).create(recursive: true);
-
-              thumbFile = await thumbFile.writeAsBytes(thumbBytes);
-
-              assert(thumbFile != null);
+              fileList.add(FileModel(
+                  duration: assetList[y].videoDuration,
+                  type: assetList[y].type,
+                  size: assetList[y].size,
+                  width: assetList[y].width,
+                  height: assetList[y].height,
+                  createDt: assetList[y].createDateTime,
+                  modifiedDt: assetList[y].modifiedDateTime,
+                  latitude: assetList[y].latitude,
+                  longitude: assetList[y].longitude,
+                  title: assetList[y].title,
+                  relativePath: assetList[y].relativePath,
+                  filePath: file.path,
+                  thumbPath: thumbFile.path
+              ));
 
             }
 
-          }catch(e){
-            print(e);
           }
-
-          fileList.add(FileModel(
-              duration: assetList[y].videoDuration,
-              type: assetList[y].type,
-              size: assetList[y].size,
-              width: assetList[y].width,
-              height: assetList[y].height,
-              createDt: assetList[y].createDateTime,
-              modifiedDt: assetList[y].modifiedDateTime,
-              latitude: assetList[y].latitude,
-              longitude: assetList[y].longitude,
-              title: assetList[y].title,
-              relativePath: assetList[y].relativePath,
-              filePath: file.path,
-              thumbPath: thumbFile.path
-          ));
 
         }
 
-        if (fileList.isEmpty) return;
+        if (fileList.isEmpty) {
 
-        this._folders.add(FolderModel(
-            files: fileList,
-            name: path.name,
-            id: path.id,
-            type: path.albumType,
-            count: path.assetCount
-        ));
+          this._folders.add(FolderModel(
+              files: fileList,
+              name: path.name,
+              id: path.id,
+              type: path.albumType,
+              count: path.assetCount
+          ));
 
-        if (this._folders != null && this._folders.length == 1){
+          if (this._folders != null && this._folders.length == 1){
 
-          this._selectedFolder = this._folders[0];
-          this._selectedFile = this._folders[0].files[0];
+            this._selectedFolder = this._folders[0];
+            this._selectedFile = this._folders[0].files[0];
+
+          }
 
         }
 
