@@ -158,7 +158,7 @@ class GalleryProvider extends ChangeNotifier{
 
           if (assetList[y].type != AssetType.image && assetList[y].type != AssetType.video) return;
 
-          if (!['.mp4', '.mov', '.png', '.jpg', '.jpeg', '.gif'].contains(extension(file.path).toLowerCase())) return;
+          if (!['.mp4', '.png', '.jpg', '.jpeg', '.gif'].contains(extension(file.path).toLowerCase())) return;
 
           try{
 
