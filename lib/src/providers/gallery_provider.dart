@@ -229,7 +229,7 @@ class GalleryProvider extends ChangeNotifier{
 
         }
 
-        if (fileList.isEmpty) {
+        if (fileList.isNotEmpty) {
 
           this._folders.add(FolderModel(
               files: fileList,
