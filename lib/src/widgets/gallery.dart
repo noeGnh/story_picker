@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 import 'package:photo_manager/photo_manager.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,8 @@ import 'package:story_picker/src/models/folder_model.dart';
 import 'package:story_picker/src/providers/gallery_provider.dart';
 import 'package:story_picker/src/utils/utils.dart';
 import 'package:story_picker/story_picker.dart';
+import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 Options options;
 
@@ -50,7 +53,6 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
 
   @override
   void dispose() {
-    galleryProvider.disposeVideoController();
     super.dispose();
   }
 
@@ -116,7 +118,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                             children: [
                               provider.selectedFile.type == AssetType.image
                                   ? GalleryImagePreview(provider)
-                                  : GalleryVideoPreview(),
+                                  : GalleryVideoPreview(provider, Key(path.basename(provider.selectedFile.filePath))),
                               options.customizationOptions.galleryCustomization.maxSelectable > 1 ? Positioned(
                                   right: 20,
                                   bottom: provider.selectedFile.type == AssetType.video ? 50 : 5,
@@ -196,32 +198,78 @@ class GalleryImagePreview extends StatelessWidget {
 }
 
 class GalleryVideoPreview extends StatefulWidget {
+  final GalleryProvider provider;
+  final Key key;
+
+  GalleryVideoPreview(this.provider, this.key) : super(key: key);
+
   @override
   _GalleryVideoPreviewState createState() => _GalleryVideoPreviewState();
 }
 
 class _GalleryVideoPreviewState extends State<GalleryVideoPreview> {
 
-  GalleryProvider provider;
+  Future<bool> _init;
+  ChewieController _chewieController;
+  VideoPlayerController _videoPlayerController;
 
   @override
   void initState() {
-    provider = Provider.of<GalleryProvider>(context, listen: false);
-
     super.initState();
+
+    _videoPlayerController = VideoPlayerController.file(File(widget.provider.selectedFile.filePath));
+
+    _init = initVideoPlayer();
+  }
+
+  Future<bool> initVideoPlayer() async {
+    await _videoPlayerController.initialize();
+
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController,
+      allowFullScreen: false,
+      aspectRatio: _videoPlayerController.value.aspectRatio,
+      autoPlay: true,
+      looping: false,
+    );
+
+    return true;
   }
 
   @override
   void dispose() {
-    provider.disposeVideoController();
+    _videoPlayerController.dispose();
+    _chewieController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    provider.initVideoController(File(provider.selectedFile.filePath));
 
-    return Chewie(controller: provider.chewieController);
+    return FutureBuilder<bool>(
+      future: _init,
+      builder: (ctx, snp){
+
+        if (!snp.hasData) return Center(
+            child: CircularProgressIndicator(
+                backgroundColor: options.customizationOptions.accentColor
+            )
+        );
+
+        return VisibilityDetector(
+            key: widget.key,
+            onVisibilityChanged: (VisibilityInfo info) {
+              if(info.visibleFraction == 0)
+                _chewieController.pause();
+              else
+                _chewieController.play();
+            },
+            child: Chewie(controller: _chewieController)
+        );
+
+      }
+    );
+
   }
 
 }

@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:logger/logger.dart';
@@ -17,7 +16,6 @@ import 'package:story_picker/src/models/result.dart';
 import 'package:story_picker/src/utils/utils.dart';
 import 'package:story_picker/src/widgets/preview/image_preview.dart';
 import 'package:story_picker/src/widgets/preview/video_preview.dart';
-import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 class GalleryProvider extends ChangeNotifier{
@@ -34,10 +32,6 @@ class GalleryProvider extends ChangeNotifier{
 
   int _multiSelectLimit = 5;
   bool _multiSelect = false;
-
-  String oldVideoFilePath;
-  ChewieController chewieController;
-  VideoPlayerController videoPlayerController;
 
   List<FileModel> get files => this._files;
   List<FolderModel> get folders => this._folders;
@@ -80,50 +74,6 @@ class GalleryProvider extends ChangeNotifier{
       this._files.add(file);
     }
     notifyListeners();
-  }
-
-  void initVideoController(File file) {
-
-    if (oldVideoFilePath == null || File(oldVideoFilePath) != file) {
-
-      VideoPlayerController videoPlayerController = VideoPlayerController.file(file);
-
-      videoPlayerController.setVolume(0.0);
-
-      ChewieController chewieController = ChewieController(
-        videoPlayerController: videoPlayerController,
-        allowedScreenSleep: false,
-        allowFullScreen: false,
-        aspectRatio: 1,
-        autoPlay: true,
-        looping: false,
-      );
-
-      this.oldVideoFilePath = file.path;
-      this.chewieController = chewieController;
-      this.videoPlayerController = videoPlayerController;
-
-    }
-
-  }
-
-  pauseVideo() async {
-    if (chewieController != null && chewieController.isPlaying) await chewieController.pause();
-  }
-
-  playVideo() async {
-    if (chewieController != null && !chewieController.isPlaying) await chewieController.play();
-  }
-
-  disposeVideoController(){
-    try{
-
-      if (chewieController != null) chewieController.dispose(); chewieController = null;
-      if (videoPlayerController != null) videoPlayerController.dispose(); videoPlayerController = null;
-
-    }catch(e){
-      print(e);
-    }
   }
 
   getFilesPath() async {
@@ -207,21 +157,25 @@ class GalleryProvider extends ChangeNotifier{
                 print(e);
               }
 
-              fileList.add(FileModel(
-                  duration: assetList[y].videoDuration,
-                  type: assetList[y].type,
-                  size: assetList[y].size,
-                  width: assetList[y].width,
-                  height: assetList[y].height,
-                  createDt: assetList[y].createDateTime,
-                  modifiedDt: assetList[y].modifiedDateTime,
-                  latitude: assetList[y].latitude,
-                  longitude: assetList[y].longitude,
-                  title: assetList[y].title,
-                  relativePath: assetList[y].relativePath,
-                  filePath: file.path,
-                  thumbPath: thumbFile.path
-              ));
+              if (thumbFile != null){
+
+                fileList.add(FileModel(
+                    duration: assetList[y].videoDuration,
+                    type: assetList[y].type,
+                    size: assetList[y].size,
+                    width: assetList[y].width,
+                    height: assetList[y].height,
+                    createDt: assetList[y].createDateTime,
+                    modifiedDt: assetList[y].modifiedDateTime,
+                    latitude: assetList[y].latitude,
+                    longitude: assetList[y].longitude,
+                    title: assetList[y].title,
+                    relativePath: assetList[y].relativePath,
+                    filePath: file.path,
+                    thumbPath: thumbFile.path
+                ));
+
+              }
 
             }
 
@@ -270,8 +224,6 @@ class GalleryProvider extends ChangeNotifier{
   void onFolderSelected(FolderModel folder, {int index = 0}) {
     assert(folder.files.length > 0);
 
-    disposeVideoController();
-
     this._selectedFile = folder.files[index];
 
     this._selectedFolder = folder;
@@ -295,8 +247,6 @@ class GalleryProvider extends ChangeNotifier{
         if (this._selectedFile.type == AssetType.video) {
 
           if (this._selectedFile.duration != null && this._selectedFile.duration.inMinutes < VIDEO_LENGTH_LIMIT) {
-
-            Future.delayed(Duration(milliseconds: 1000), () async { pauseVideo(); });
 
             StoryPickerResult result = await Navigator.of(context).push(
                 PageTransition(

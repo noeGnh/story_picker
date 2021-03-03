@@ -1,6 +1,6 @@
 name: story_picker
 description: Story Picker.
-version: 0.0.4+5
+version: 0.0.5
 author: Arkane<mstrkn@gmail.com>
 homepage: https://github.com/mstrkn/StoryPicker.git
 
@@ -16,6 +16,7 @@ dependencies:
   flutter_image_compress: ^0.7.0
   auto_size_text_field: ^0.1.7
   permission_handler: ^5.1.0+2
+  visibility_detector: ^0.1.5
   page_transition: ^1.1.7+6
   video_thumbnail: ^0.2.5+1
   path_provider: ^1.6.27

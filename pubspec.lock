@@ -550,6 +550,13 @@ packages:
       url: "git@github.com:mstrkn/video_trimmer.git"
     source: git
     version: "1.0.0"
+  visibility_detector:
+    dependency: "direct main"
+    description:
+      name: visibility_detector
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.5"
   wakelock:
     dependency: transitive
     description:
