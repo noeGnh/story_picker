@@ -3,8 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:story_picker/src/models/file_model.dart';
 import 'package:story_picker/src/models/options.dart';
 import 'package:story_picker/src/providers/video_preview_provider.dart';
-import 'package:video_trimmer/trim_editor.dart';
-import 'package:video_trimmer/video_viewer.dart';
+import 'package:video_trimmer/video_trimmer.dart';
 
 Options options;
 
@@ -124,10 +123,11 @@ class _TrimmerViewState extends State<TrimmerView> {
                   child: TrimEditor(
                     viewerHeight: 50.0,
                     viewerWidth: MediaQuery.of(context).size.width,
-                    minDuration: Duration(seconds: 1),
-                    maxDuration: Duration(seconds: options.customizationOptions.videoDurationLimitInSeconds),
-                    scrubberPaintColor: options.customizationOptions.accentColor,
+                    maxVideoLength: Duration(seconds: options.customizationOptions.videoDurationLimitInSeconds),
                     durationTextStyle: TextStyle(color: options.customizationOptions.previewScreenCustomization.textColor),
+                    scrubberPaintColor: options.customizationOptions.accentColor,
+                    borderPaintColor: options.customizationOptions.accentColor,
+                    circlePaintColor: options.customizationOptions.accentColor,
                     onChangeStart: (value) {
                       provider.startValue = value;
                     },

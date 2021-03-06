@@ -456,7 +456,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.5"
+    version: "0.0.5+1"
   stream_channel:
     dependency: transitive
     description:
@@ -551,12 +551,10 @@ packages:
   video_trimmer:
     dependency: transitive
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: bcfccdce63c0a6e352363b77dc8d024c28b7e90c
-      url: "git@github.com:mstrkn/video_trimmer.git"
-    source: git
-    version: "1.0.0"
+      name: video_trimmer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.5"
   visibility_detector:
     dependency: transitive
     description:
