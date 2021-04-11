@@ -46,7 +46,7 @@ class _ContentState extends State<Content> {
             height: 300,
             child: imagePath != null ? Image.file(File(imagePath)) : Container(),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: () async {
               var result = await StoryPicker.pick(context,
                   transitionType: PageTransitionType.leftToRight,

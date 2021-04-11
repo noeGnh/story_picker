@@ -139,7 +139,7 @@ class _TrimmerViewState extends State<TrimmerView> {
                     },
                   ),
                 ),
-                FlatButton(
+                TextButton(
                   child: provider.isPlaying
                       ? Icon(
                     Icons.pause,

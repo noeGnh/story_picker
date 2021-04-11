@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:story_picker/src/models/options.dart';
 import 'package:story_picker/src/providers/camera_provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
-import 'package:torch_compat/torch_compat.dart';
 
 Options options;
 
@@ -253,25 +252,16 @@ class FlashToggleIconWidget extends StatelessWidget {
       default:  iconData = Icons.flash_off;
     }
 
-    return FutureBuilder<bool>(
-        future: TorchCompat.hasTorch,
-        builder: (ctx, snapshot){
-
-          return snapshot.hasData && snapshot.data
-              ? GestureDetector(
-                child: Padding(
-                  padding: EdgeInsets.only(left: options.settingsTarget != null ? 0 : 21),
-                  child: Icon(iconData, color: options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
-                ),
-                onTap: (){
-                  if (cameraProvider.controller != null && cameraProvider.controller.value.isInitialized){
-                    cameraProvider.onFlashButtonPressed();
-                  }
-                },
-              )
-              : Spacer();
-
+    return GestureDetector(
+      child: Padding(
+        padding: EdgeInsets.only(left: options.settingsTarget != null ? 0 : 21),
+        child: Icon(iconData, color: options.customizationOptions.cameraCustomization.iconsColor, size: 32,),
+      ),
+      onTap: (){
+        if (cameraProvider.controller != null && cameraProvider.controller.value.isInitialized){
+          cameraProvider.onFlashButtonPressed();
         }
+      },
     );
 
   }
