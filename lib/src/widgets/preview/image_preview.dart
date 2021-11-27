@@ -6,14 +6,14 @@ import 'package:story_picker/src/models/file_model.dart';
 import 'package:story_picker/src/models/options.dart';
 import 'package:story_picker/src/providers/image_preview_provider.dart';
 
-Options options;
+Options? options;
 
 class ImagePreview extends StatelessWidget {
 
-  final List<FileModel> files;
+  final List<FileModel?>? files;
   final bool showAddButton;
 
-  ImagePreview({@required Options imagePreviewOptions, @required this.showAddButton, this.files}){
+  ImagePreview({required Options? imagePreviewOptions, required this.showAddButton, this.files}){
     options = imagePreviewOptions;
   }
 
@@ -28,24 +28,24 @@ class ImagePreview extends StatelessWidget {
 }
 
 class ImagePreviewContent extends StatefulWidget {
-  final List<FileModel> files;
-  final bool showAddButton;
+  final List<FileModel?>? files;
+  final bool? showAddButton;
 
-  ImagePreviewContent({Key key, this.files, this.showAddButton}) : super(key: key);
+  ImagePreviewContent({Key? key, this.files, this.showAddButton}) : super(key: key);
 
   @override
   _ImagePreviewContentState createState() => _ImagePreviewContentState();
 }
 
 class _ImagePreviewContentState extends State<ImagePreviewContent> {
-  ImagePreviewProvider _imagePreviewProvider;
+  late ImagePreviewProvider _imagePreviewProvider;
 
   Widget _getItemCard(int index){
     return Card(
       child: Stack(
         children: [
           Image.file(
-            File(_imagePreviewProvider.files.elementAt(index).filePath),
+            File(_imagePreviewProvider.files!.elementAt(index)!.filePath!),
             fit: BoxFit.contain,
           ),
           Positioned(
@@ -61,38 +61,38 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                     GestureDetector(
                       child: Container(
                         decoration: BoxDecoration(
-                            color: options.customizationOptions.previewScreenCustomization.bgColor,
+                            color: options!.customizationOptions.previewScreenCustomization.bgColor,
                             shape: BoxShape.circle
                         ),
                         child: Icon(
                           Icons.photo_filter_sharp,
-                          color: options.customizationOptions.previewScreenCustomization.iconsColor,
+                          color: options!.customizationOptions.previewScreenCustomization.iconsColor,
                           size: 32,
                         ),
                         alignment: Alignment.center,
                         width: 54,
                       ),
                       onTap: (){
-                        _imagePreviewProvider.addFilter(context, _imagePreviewProvider.files.elementAt(index), options);
+                        _imagePreviewProvider.addFilter(context, _imagePreviewProvider.files!.elementAt(index)!, options);
                       },
                     ),
                     SizedBox(width: 30,),
                     GestureDetector(
                       child: Container(
                         decoration: BoxDecoration(
-                            color: options.customizationOptions.previewScreenCustomization.bgColor,
+                            color: options!.customizationOptions.previewScreenCustomization.bgColor,
                             shape: BoxShape.circle
                         ),
                         child: Icon(
                           Icons.edit,
-                          color: options.customizationOptions.previewScreenCustomization.iconsColor,
+                          color: options!.customizationOptions.previewScreenCustomization.iconsColor,
                           size: 32,
                         ),
                         alignment: Alignment.center,
                         width: 54,
                       ),
                       onTap: (){
-                        _imagePreviewProvider.edit(_imagePreviewProvider.files.elementAt(index), options);
+                        _imagePreviewProvider.edit(_imagePreviewProvider.files!.elementAt(index)!, options!);
                       },
                     ),
                   ],
@@ -111,20 +111,20 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
     _imagePreviewProvider =  Provider.of<ImagePreviewProvider>(context, listen: false);
     _imagePreviewProvider.files = widget.files;
 
-    _imagePreviewProvider.translations = options.translations;
+    _imagePreviewProvider.translations = options!.translations;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: options.customizationOptions.previewScreenCustomization.bgColor,
+      backgroundColor: options!.customizationOptions.previewScreenCustomization.bgColor,
       appBar: AppBar(
         elevation: 0.0,
-        title: Text(options.translations.preview, style: TextStyle(color: options.customizationOptions.previewScreenCustomization.textColor),),
+        title: Text(options!.translations.preview, style: TextStyle(color: options!.customizationOptions.previewScreenCustomization.textColor),),
         leading: GestureDetector(
           child: Icon(
             Icons.arrow_back,
-            color: options.customizationOptions.previewScreenCustomization.iconsColor,
+            color: options!.customizationOptions.previewScreenCustomization.iconsColor,
           ),
           onTap: (){
             Navigator.pop(context, null);
@@ -136,7 +136,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Icon(
                 Icons.check,
-                color:options.customizationOptions.previewScreenCustomization.iconsColor,
+                color:options!.customizationOptions.previewScreenCustomization.iconsColor,
               ),
             ),
             onTap: (){
@@ -144,7 +144,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
             },
           )
         ],
-        backgroundColor: options.customizationOptions.appBarColor,
+        backgroundColor: options!.customizationOptions.appBarColor,
       ),
       body: Container(
           padding: EdgeInsets.symmetric(vertical: 80),
@@ -152,14 +152,14 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
           child: Consumer<ImagePreviewProvider>(
               builder: (ctx, provider, child){
 
-                int itemCount = widget.showAddButton ? provider.files.length + 1 : provider.files.length;
+                int itemCount = widget.showAddButton! ? provider.files!.length + 1 : provider.files!.length;
 
                 return ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: itemCount,
                     itemBuilder: (ctx, i) {
 
-                      if (i == provider.files.length && widget.showAddButton) {
+                      if (i == provider.files!.length && widget.showAddButton!) {
                         return Card(
                             child: Padding(
                               padding: EdgeInsets.symmetric(horizontal: 50),
@@ -167,7 +167,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                                 child: GestureDetector(
                                   child: Icon(
                                     Icons.add_circle,
-                                    color: options.customizationOptions.previewScreenCustomization.iconsColor,
+                                    color: options!.customizationOptions.previewScreenCustomization.iconsColor,
                                     size: 128,
                                   ),
                                   onTap: (){
@@ -180,7 +180,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                       }
 
                       return itemCount <= 1 ? Container(
-                        color: options.customizationOptions.previewScreenCustomization.bgColor,
+                        color: options!.customizationOptions.previewScreenCustomization.bgColor,
                         width: MediaQuery.of(context).size.width,
                         alignment: Alignment.center,
                         child: _getItemCard(i),

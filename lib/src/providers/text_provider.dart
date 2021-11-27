@@ -9,9 +9,9 @@ import 'package:story_picker/src/widgets/gallery.dart';
 
 class TextProvider extends ChangeNotifier{
 
-  TextEditingController textEditingController;
-  int textFontIndex, textAlignIndex, textBgIndex;
-  KeyboardVisibilityController keyboardVisibilityController;
+  TextEditingController? textEditingController;
+  int? textFontIndex, textAlignIndex, textBgIndex;
+  KeyboardVisibilityController? keyboardVisibilityController;
 
   init(){
     textBgIndex = 0;
@@ -22,30 +22,30 @@ class TextProvider extends ChangeNotifier{
   }
   
   switchTextFont(){
-    if (textFontIndex + 1 >= StoryConstants.fonts.length) {
+    if (textFontIndex! + 1 >= StoryConstants.fonts.length) {
       textFontIndex = 0;
     }else{
-      textFontIndex++;
+      textFontIndex = textFontIndex! + 1;
     }
 
     notifyListeners();
   }
   
   switchTextAlign(){
-    if (textAlignIndex + 1 >= StoryConstants.textAlignments.length) {
+    if (textAlignIndex! + 1 >= StoryConstants.textAlignments.length) {
       textAlignIndex = 0;
     }else{
-      textAlignIndex++;
+      textAlignIndex = textAlignIndex! + 1;
     }
 
     notifyListeners();
   }
 
   switchTextBackground(){
-    if (textBgIndex + 1 >= StoryConstants.textBackgrounds.length) {
+    if (textBgIndex! + 1 >= StoryConstants.textBackgrounds.length) {
       textBgIndex = 0;
     }else{
-      textBgIndex++;
+      textBgIndex = textBgIndex! + 1;
     }
 
     notifyListeners();
@@ -62,9 +62,9 @@ class TextProvider extends ChangeNotifier{
 
   }
 
-  openGalleryScreen(BuildContext context, Options options) async {
+  openGalleryScreen(BuildContext context, Options? options) async {
 
-    StoryPickerResult result = await Navigator.of(context).push(
+    StoryPickerResult? result = await Navigator.of(context).push(
         PageTransition(
             child: Gallery(options),
             type: PageTransitionType.bottomToTop
@@ -77,17 +77,17 @@ class TextProvider extends ChangeNotifier{
 
   submit(BuildContext context) {
 
-    if (textEditingController.text.isEmpty) return;
+    if (textEditingController!.text.isEmpty) return;
 
     Navigator.pop(
         context,
         StoryPickerResult(
             storyText: StoryText(
-              font: StoryConstants.fonts[textFontIndex],
-              text: textEditingController.text,
-              align: StoryConstants.textAlignments[textAlignIndex],
-              colorHex: StoryConstants.textBackgrounds[textBgIndex].textColor.toHex(),
-              linearGradient: StoryConstants.textBackgrounds[textBgIndex].linearGradient,
+              font: StoryConstants.fonts[textFontIndex!],
+              text: textEditingController!.text,
+              align: StoryConstants.textAlignments[textAlignIndex!],
+              colorHex: StoryConstants.textBackgrounds[textBgIndex!].textColor!.toHex(),
+              linearGradient: StoryConstants.textBackgrounds[textBgIndex!].linearGradient,
               fontIndex: textFontIndex,
               alignIndex: textAlignIndex,
               linearGradientIndex: textAlignIndex

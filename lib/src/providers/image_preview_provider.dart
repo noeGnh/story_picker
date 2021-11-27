@@ -12,37 +12,37 @@ import 'package:story_picker/src/models/result.dart';
 
 class ImagePreviewProvider extends ChangeNotifier{
 
-  List<FileModel> files = [];
+  List<FileModel?>? files = [];
 
-  Translations _translations;
+  late Translations _translations;
 
   set translations(Translations translations) { this._translations = translations; }
 
   _updateFiles(FileModel file, File resultFile){
 
-    int index = this.files.indexOf(file);
+    int index = this.files!.indexOf(file);
     file.filePath = resultFile.path;
-    this.files[index] = file;
+    this.files![index] = file;
 
     notifyListeners();
 
   }
 
-  addFilter(BuildContext context, FileModel file, Options options) async {
+  addFilter(BuildContext context, FileModel file, Options? options) async {
 
-    var f = File(file.filePath);
+    var f = File(file.filePath!);
 
-    var image = imageLib.decodeImage(f.readAsBytesSync());
+    var image = imageLib.decodeImage(f.readAsBytesSync())!;
     image = imageLib.copyResize(image, width: 600);
 
-    Map filterResult = await Navigator.push(
+    Map? filterResult = await Navigator.push(
       context,
       new MaterialPageRoute(
         builder: (context) => PhotoFilterSelector(
-          title: Text(this._translations.filters, style: TextStyle(color: options.customizationOptions.previewScreenCustomization.iconsColor),),
+          title: Text(this._translations.filters, style: TextStyle(color: options!.customizationOptions.previewScreenCustomization.iconsColor),),
           image: image,
           filters: presetFiltersList,
-          filename: basename(file.filePath),
+          filename: basename(file.filePath!),
           appBarColor: options.customizationOptions.appBarColor,
           appBarIconsColor: options.customizationOptions.previewScreenCustomization.iconsColor,
           loader: Center(child: CircularProgressIndicator(backgroundColor: options.customizationOptions.previewScreenCustomization.iconsColor,)),
@@ -53,7 +53,7 @@ class ImagePreviewProvider extends ChangeNotifier{
 
     if (filterResult != null && filterResult.containsKey('image_filtered')) {
 
-      File resultFile = filterResult['image_filtered'];
+      File? resultFile = filterResult['image_filtered'];
 
       if (resultFile != null) {
 
@@ -67,8 +67,8 @@ class ImagePreviewProvider extends ChangeNotifier{
 
   edit(FileModel file, Options options) async {
 
-    File editResult = await ImageCropper.cropImage(
-        sourcePath: file.filePath,
+    File? editResult = await ImageCropper.cropImage(
+        sourcePath: file.filePath!,
         cropStyle: CropStyle.rectangle,
         compressFormat: ImageCompressFormat.png,
         aspectRatioPresets: [
@@ -110,10 +110,10 @@ class ImagePreviewProvider extends ChangeNotifier{
     List<PickedFile> pickedFiles = [];
 
     if (files != null){
-      files.map((file) {
+      files!.map((file) {
         pickedFiles.add(PickedFile(
-            path: file.filePath,
-            name: basename(file.filePath)
+            path: file!.filePath,
+            name: basename(file.filePath!)
         ));
       }).toList();
 

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class StoryPickerResult{
 
-  List<PickedFile> pickedFiles;
-  ResultType resultType;
-  StoryText storyText;
+  List<PickedFile>? pickedFiles;
+  ResultType? resultType;
+  StoryText? storyText;
 
   StoryPickerResult({this.resultType, this.pickedFiles, this.storyText});
 
@@ -12,14 +12,14 @@ class StoryPickerResult{
 
 class StoryText{
 
-  LinearGradient linearGradient;
-  TextAlign align;
-  String colorHex;
-  String font;
-  String text;
-  int fontIndex;
-  int alignIndex;
-  int linearGradientIndex;
+  LinearGradient? linearGradient;
+  TextAlign? align;
+  String? colorHex;
+  String? font;
+  String? text;
+  int? fontIndex;
+  int? alignIndex;
+  int? linearGradientIndex;
 
   StoryText({
     this.text,
@@ -36,8 +36,8 @@ class StoryText{
 
 class PickedFile{
 
-  String path;
-  String name;
+  String? path;
+  String? name;
 
   PickedFile({this.path, this.name});
 

@@ -9,11 +9,11 @@ import 'package:story_picker/story_picker.dart';
 
 class StoryPicker{
 
-  static Future<StoryPickerResult> pick(
+  static Future<StoryPickerResult?> pick(
       BuildContext context,
       {
-        PageTransitionType transitionType,
-        Options options
+        required PageTransitionType transitionType,
+        Options? options
       }
   ) async
   => await Navigator.of(context).push(
@@ -27,7 +27,7 @@ class StoryPicker{
 
 class Picker extends StatelessWidget {
 
-  final Options options;
+  final Options? options;
 
   Picker({this.options});
 
@@ -46,9 +46,9 @@ class Picker extends StatelessWidget {
 
 class PickerView extends StatefulWidget {
 
-  final Options options;
+  final Options? options;
 
-  PickerView({Key key, this.options}) : super(key: key);
+  PickerView({Key? key, this.options}) : super(key: key);
 
   @override
   _PickerViewState createState() => _PickerViewState();

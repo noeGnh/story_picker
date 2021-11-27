@@ -6,11 +6,11 @@ import 'package:story_picker/src/providers/text_provider.dart';
 import 'package:story_picker/src/utils/constants.dart';
 import 'package:story_picker/story_picker.dart';
 
-Options options;
+Options? options;
 
 class Text extends StatelessWidget {
 
-  Text(Options opt){ options = opt; }
+  Text(Options? opt){ options = opt; }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class TextView extends StatefulWidget {
 
 class _TextViewState extends State<TextView> {
 
-  TextProvider textProvider;
+  late TextProvider textProvider;
 
   @override
   void initState() {
@@ -48,7 +48,7 @@ class _TextViewState extends State<TextView> {
 
     return Container(
         decoration: BoxDecoration(
-            gradient: StoryConstants.textBackgrounds[textProvider.textBgIndex].linearGradient
+            gradient: StoryConstants.textBackgrounds[textProvider.textBgIndex!].linearGradient
         ),
         child: Container(
           alignment: isKeyboardVisible ? Alignment.topCenter : Alignment.center,
@@ -59,10 +59,10 @@ class _TextViewState extends State<TextView> {
               controller: textProvider.textEditingController,
               style: TextStyle(
                 fontSize: 30,
-                fontFamily: StoryConstants.fonts[textProvider.textFontIndex],
-                color: StoryConstants.textBackgrounds[textProvider.textBgIndex].textColor,
+                fontFamily: StoryConstants.fonts[textProvider.textFontIndex!],
+                color: StoryConstants.textBackgrounds[textProvider.textBgIndex!].textColor,
               ),
-              textAlign: StoryConstants.textAlignments[textProvider.textAlignIndex],
+              textAlign: StoryConstants.textAlignments[textProvider.textAlignIndex!],
               minFontSize: 16,
               minLines: 1,
               maxLines: 16,
@@ -74,10 +74,10 @@ class _TextViewState extends State<TextView> {
                 enabledBorder: InputBorder.none,
                 disabledBorder: InputBorder.none,
                 hintStyle: TextStyle(
-                  fontFamily: StoryConstants.fonts[textProvider.textFontIndex],
-                  color: StoryConstants.textBackgrounds[textProvider.textBgIndex].hintColor,
+                  fontFamily: StoryConstants.fonts[textProvider.textFontIndex!],
+                  color: StoryConstants.textBackgrounds[textProvider.textBgIndex!].hintColor,
                 ),
-                hintText: options.translations.pressToWrite,
+                hintText: options!.translations.pressToWrite,
               ),
             )
           ),
@@ -92,7 +92,7 @@ class _TextViewState extends State<TextView> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
       children: [
-        options.settingsTarget != null ? _settingsIconWidget() : Container(),
+        options!.settingsTarget != null ? _settingsIconWidget() : Container(),
         Container(),
         _closeIconWidget(),
       ],
@@ -119,7 +119,7 @@ class _TextViewState extends State<TextView> {
     return GestureDetector(
       child: Padding(
         padding: EdgeInsets.only(right: 21),
-        child: Icon(Icons.check, color: options.customizationOptions.textCustomization.iconsColor, size: 32,),
+        child: Icon(Icons.check, color: options!.customizationOptions.textCustomization.iconsColor, size: 32,),
       ),
       onTap: (){
         textProvider.submit(context);
@@ -131,7 +131,7 @@ class _TextViewState extends State<TextView> {
   Widget _textFontIconWidget(){
 
     return GestureDetector(
-      child: Icon(Icons.font_download, color: options.customizationOptions.textCustomization.iconsColor, size: 32,),
+      child: Icon(Icons.font_download, color: options!.customizationOptions.textCustomization.iconsColor, size: 32,),
       onTap: (){
         textProvider.switchTextFont();
       },
@@ -141,7 +141,7 @@ class _TextViewState extends State<TextView> {
 
   Widget _textAlignIconWidget(){
 
-    IconData alignIcon;
+    IconData? alignIcon;
 
     switch(textProvider.textAlignIndex){
       case 0:
@@ -160,7 +160,7 @@ class _TextViewState extends State<TextView> {
     return GestureDetector(
       child: Padding(
         padding: EdgeInsets.only(left: 21),
-        child: Icon(alignIcon, color: options.customizationOptions.textCustomization.iconsColor, size: 32,),
+        child: Icon(alignIcon, color: options!.customizationOptions.textCustomization.iconsColor, size: 32,),
       ),
       onTap: (){
         textProvider.switchTextAlign();
@@ -174,10 +174,10 @@ class _TextViewState extends State<TextView> {
     return GestureDetector(
       child: Padding(
         padding: EdgeInsets.only(left: 21),
-        child: Icon(Icons.settings, color: options.customizationOptions.textCustomization.iconsColor, size: 32,),
+        child: Icon(Icons.settings, color: options!.customizationOptions.textCustomization.iconsColor, size: 32,),
       ),
       onTap: (){
-        textProvider.openSettingsScreen(context, options.settingsTarget);
+        textProvider.openSettingsScreen(context, options!.settingsTarget);
       },
     );
 
@@ -188,7 +188,7 @@ class _TextViewState extends State<TextView> {
     return GestureDetector(
       child: Padding(
         padding: EdgeInsets.only(right: 21),
-        child: Icon(Icons.close, color: options.customizationOptions.textCustomization.iconsColor, size: 32,),
+        child: Icon(Icons.close, color: options!.customizationOptions.textCustomization.iconsColor, size: 32,),
       ),
       onTap: (){
         Navigator.pop(context, null);
@@ -218,7 +218,7 @@ class _TextViewState extends State<TextView> {
                   height: 68,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: options.customizationOptions.textCustomization.iconsColor
+                      color: options!.customizationOptions.textCustomization.iconsColor
                   ),
                 ),
                 onTap: (){
@@ -237,7 +237,7 @@ class _TextViewState extends State<TextView> {
     return GestureDetector(
       child: Padding(
         padding: EdgeInsets.only(left: 21),
-        child: Icon(Icons.image, color: options.customizationOptions.textCustomization.iconsColor, size: 32,),
+        child: Icon(Icons.image, color: options!.customizationOptions.textCustomization.iconsColor, size: 32,),
       ),
       onTap: (){
         textProvider.openGalleryScreen(context, options);
@@ -257,7 +257,7 @@ class _TextViewState extends State<TextView> {
           decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white, width: 1),
-              gradient: StoryConstants.textBackgrounds[textProvider.textBgIndex].linearGradient
+              gradient: StoryConstants.textBackgrounds[textProvider.textBgIndex!].linearGradient
           ),
         )
       ),

@@ -13,20 +13,20 @@ class VideoPreviewProvider extends ChangeNotifier{
   double _startValue = 0.0;
   double _endValue = 0.0;
 
-  bool _isPlaying = false;
+  bool? _isPlaying = false;
   bool _progressVisibility = false;
 
   get trimmer => this._trimmer;
 
-  get endValue => this._endValue;
+  double get endValue => this._endValue;
 
-  get isPlaying => this._isPlaying;
+  bool? get isPlaying => this._isPlaying;
 
-  get startValue => this._startValue;
+  double get startValue => this._startValue;
 
-  get progressVisibility => this._progressVisibility;
+  bool get progressVisibility => this._progressVisibility;
 
-  set isPlaying(bool v){ this._isPlaying = v; notifyListeners(); }
+  set isPlaying(bool? v){ this._isPlaying = v; notifyListeners(); }
 
   set endValue(double v){ this._endValue = v; }
 
@@ -34,9 +34,9 @@ class VideoPreviewProvider extends ChangeNotifier{
 
   set progressVisibility(bool v){ this._progressVisibility = v; notifyListeners(); }
 
-  List<FileModel> files;
+  List<FileModel?>? files;
 
-  loadVideoTrimmer() async => await _trimmer.loadVideo(videoFile: File(files[0].filePath));
+  loadVideoTrimmer() async => await _trimmer.loadVideo(videoFile: File(files![0]!.filePath!));
 
   submit(BuildContext context) async {
 
@@ -52,7 +52,7 @@ class VideoPreviewProvider extends ChangeNotifier{
       List<PickedFile> pickedFiles = [];
 
       if (files != null){
-        files.map((file) {
+        files!.map((file) {
           pickedFiles.add(
               PickedFile(
                   path: result,

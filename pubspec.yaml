@@ -1,37 +1,36 @@
 name: story_picker
 description: Story Picker.
-version: 0.0.6+1
-author: Arkane<mstrkn@gmail.com>
+version: 0.0.7
 homepage: https://github.com/mstrkn/StoryPicker.git
 publish_to: 'none'
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.17.0"
+  sdk: '>=2.12.0 <3.0.0'
+  flutter: ">=1.17.0 <2.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  flutter_keyboard_visibility: ^5.0.2
-  flutter_image_compress: ^1.0.0
-  auto_size_text_field: ^0.1.7
-  permission_handler: ^8.0.0+2
-  visibility_detector: ^0.2.0
-  page_transition: ^2.0.2
-  video_thumbnail: ^0.3.3
-  path_provider: ^2.0.1
-  video_trimmer: ^0.4.0
+  flutter_keyboard_visibility: ^5.1.0
+  flutter_image_compress: ^1.1.0
+  auto_size_text_field: ^1.0.1
+  permission_handler: ^8.3.0
+  visibility_detector: ^0.2.2
+  page_transition: ^2.0.4
+  video_thumbnail: ^0.4.3
+  path_provider: ^2.0.7
+  video_trimmer: ^0.6.0
   super_tooltip: ^1.0.1
-  photo_manager: ^1.2.0
-  image_cropper: ^1.4.0
-  video_player: ^2.1.1
-  fluttertoast: ^8.0.7
-  photo_view: ^0.11.1
-  provider: ^5.0.0
-  camera: ^0.8.1
-  chewie: ^1.1.0
-  logger: ^1.0.0
+  photo_manager: ^1.3.10
+  image_cropper: ^1.4.1
+  video_player: ^2.2.7
+  fluttertoast: ^8.0.8
+  photo_view: ^0.13.0
+  provider: ^6.0.1
+  camera: ^0.9.4+5
+  chewie: ^1.2.2
+  logger: ^1.1.0
   path: ^1.8.0
 
   photofilters:
@@ -42,6 +41,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  provider: ^6.0.1
 
 flutter:
 

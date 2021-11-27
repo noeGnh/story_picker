@@ -10,8 +10,8 @@ class Options{
 
   Options({
     this.settingsTarget,
-    Translations translations,
-    CustomizationOptions customizationOptions
+    Translations? translations,
+    CustomizationOptions? customizationOptions
   }) : this.translations = translations ?? Translations(),
        this.customizationOptions = customizationOptions ?? CustomizationOptions();
 
@@ -31,10 +31,10 @@ class CustomizationOptions{
     this.accentColor = Colors.black,
     this.appBarColor = Colors.white,
     this.videoDurationLimitInSeconds = 15,
-    TextCustomization textCustomization,
-    CameraCustomization cameraCustomization,
-    GalleryCustomization galleryCustomization,
-    PreviewScreenCustomization previewScreenCustomization
+    TextCustomization? textCustomization,
+    CameraCustomization? cameraCustomization,
+    GalleryCustomization? galleryCustomization,
+    PreviewScreenCustomization? previewScreenCustomization
   }) : this.textCustomization = textCustomization ?? TextCustomization(),
        this.cameraCustomization = cameraCustomization ?? CameraCustomization(),
        this.galleryCustomization = galleryCustomization ?? GalleryCustomization(),

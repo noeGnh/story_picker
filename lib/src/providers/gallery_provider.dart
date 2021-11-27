@@ -24,22 +24,22 @@ class GalleryProvider extends ChangeNotifier{
 
   static const int VIDEO_LENGTH_LIMIT = 30;
 
-  FileModel _selectedFile;
-  Translations _translations;
-  FolderModel _selectedFolder;
-  List<FileModel> _files = [];
+  FileModel? _selectedFile;
+  late Translations _translations;
+  FolderModel? _selectedFolder;
+  List<FileModel?> _files = [];
   List<FolderModel> _folders = [];
 
   int _multiSelectLimit = 5;
   bool _multiSelect = false;
 
-  List<FileModel> get files => this._files;
+  List<FileModel?> get files => this._files;
   List<FolderModel> get folders => this._folders;
-  FileModel get selectedFile => this._selectedFile;
-  FolderModel get selectedFolder => this._selectedFolder;
+  FileModel? get selectedFile => this._selectedFile;
+  FolderModel? get selectedFolder => this._selectedFolder;
 
-  get multiSelect => this._multiSelect;
-  get multiSelectLimit => this._multiSelectLimit;
+  bool get multiSelect => this._multiSelect;
+  int get multiSelectLimit => this._multiSelectLimit;
 
   set multiSelect(bool b){
     this._files.clear();
@@ -47,21 +47,19 @@ class GalleryProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  set multiSelectLimit(bool b){ this._multiSelect = b; }
-
-  set selectedFile(FileModel file){ this._selectedFile = file; notifyListeners(); }
+  set selectedFile(FileModel? file){ this._selectedFile = file; notifyListeners(); }
 
   set translations(Translations translations){ this._translations = translations; }
 
-  getCheckNumber(FileModel file) => this._files.indexOf(file) + 1;
+  getCheckNumber(FileModel? file) => this._files.indexOf(file) + 1;
 
-  getCheckState(FileModel file) => this._files.contains(file);
+  getCheckState(FileModel? file) => this._files.contains(file);
 
-  toggleCheckState(FileModel file){
+  toggleCheckState(FileModel? file){
     if (getCheckState(file)){
       this._files.remove(file);
     }else{
-      if (file.type == AssetType.video) {
+      if (file!.type == AssetType.video) {
         StoryUtils.showToast(this._translations.multiSelectionDoesntSupportVideos);
         return;
       }
@@ -104,11 +102,11 @@ class GalleryProvider extends ChangeNotifier{
 
         for(int y = 0; y < assetList.length; y++){
 
-          File file = await assetList[y].file; File thumbFile;
+          File? file = await assetList[y].file; File? thumbFile;
 
           if (assetList[y].type == AssetType.image || assetList[y].type == AssetType.video) {
 
-            if (['.mp4', '.png', '.jpg', '.jpeg', '.gif'].contains(extension(file.path).toLowerCase())) {
+            if (['.mp4', '.png', '.jpg', '.jpeg', '.gif'].contains(extension(file!.path).toLowerCase())) {
 
               try{
 
@@ -123,7 +121,7 @@ class GalleryProvider extends ChangeNotifier{
 
                 } else {
 
-                  Uint8List thumbBytes;
+                  Uint8List? thumbBytes;
 
                   if (assetList[y].type == AssetType.video){
 
@@ -147,9 +145,7 @@ class GalleryProvider extends ChangeNotifier{
 
                   thumbFile = await File(thumbPath).create(recursive: true);
 
-                  thumbFile = await thumbFile.writeAsBytes(thumbBytes);
-
-                  assert(thumbFile != null);
+                  thumbFile = await thumbFile.writeAsBytes(thumbBytes!);
 
                 }
 
@@ -193,10 +189,10 @@ class GalleryProvider extends ChangeNotifier{
               count: path.assetCount
           ));
 
-          if (this._folders != null && this._folders.length == 1){
+          if (this._folders.length == 1){
 
             this._selectedFolder = this._folders[0];
-            this._selectedFile = this._folders[0].files[0];
+            this._selectedFile = this._folders[0].files![0];
 
           }
 
@@ -214,28 +210,28 @@ class GalleryProvider extends ChangeNotifier{
     return this._folders.map((e) => DropdownMenuItem(
       child: SizedBox(
         width: 190,
-        child: Text(e.name, textAlign: TextAlign.start, overflow: TextOverflow.ellipsis,),
+        child: Text(e.name!, textAlign: TextAlign.start, overflow: TextOverflow.ellipsis,),
       ),
       value: e,
     )
-    ).toList() ?? [];
+    ).toList();
   }
 
   void onFolderSelected(FolderModel folder, {int index = 0}) {
-    assert(folder.files.length > 0);
+    assert(folder.files!.length > 0);
 
-    this._selectedFile = folder.files[index];
+    this._selectedFile = folder.files![index];
 
     this._selectedFolder = folder;
 
     notifyListeners();
   }
 
-  void submit(BuildContext context, Options options) async {
+  void submit(BuildContext context, Options? options) async {
 
     if (this._multiSelect) {
 
-      this._returnImageResult(context, options);
+      this._returnImageResult(context, options!);
 
     } else {
 
@@ -244,11 +240,11 @@ class GalleryProvider extends ChangeNotifier{
         this._files.clear();
         this._files.add(this._selectedFile);
 
-        if (this._selectedFile.type == AssetType.video) {
+        if (this._selectedFile!.type == AssetType.video) {
 
-          if (this._selectedFile.duration != null && this._selectedFile.duration.inMinutes < VIDEO_LENGTH_LIMIT) {
+          if (this._selectedFile!.duration != null && this._selectedFile!.duration!.inMinutes < VIDEO_LENGTH_LIMIT) {
 
-            StoryPickerResult result = await Navigator.of(context).push(
+            StoryPickerResult? result = await Navigator.of(context).push(
                 PageTransition(
                     child: VideoPreview(
                       files: this._files,
@@ -266,7 +262,7 @@ class GalleryProvider extends ChangeNotifier{
 
         } else {
 
-          this._returnImageResult(context, options);
+          this._returnImageResult(context, options!);
 
         }
 
@@ -282,7 +278,7 @@ class GalleryProvider extends ChangeNotifier{
 
     this.selectedFile = this._files[0];
 
-    StoryPickerResult result = await Navigator.of(context).push(
+    StoryPickerResult? result = await Navigator.of(context).push(
         PageTransition(
             child: ImagePreview(
                 files: this._files,

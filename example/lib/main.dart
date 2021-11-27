@@ -31,7 +31,7 @@ class Content extends StatefulWidget {
 
 class _ContentState extends State<Content> {
 
-  String imagePath;
+  String? imagePath;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class _ContentState extends State<Content> {
           Container(
             width: 300,
             height: 300,
-            child: imagePath != null ? Image.file(File(imagePath)) : Container(),
+            child: imagePath != null ? Image.file(File(imagePath!)) : Container(),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -55,7 +55,7 @@ class _ContentState extends State<Content> {
                   )
               );
               setState(() {
-                imagePath = result != null ? result.pickedFiles[0].path : null;
+                imagePath = result != null ? result.pickedFiles![0].path : null;
               });
             },
             child: Text('Pick It'),
