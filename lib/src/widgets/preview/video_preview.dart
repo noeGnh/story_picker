@@ -43,6 +43,8 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
 
     _videoPreviewProvider = Provider.of<VideoPreviewProvider>(context, listen: false);
     _videoPreviewProvider.files = widget.files;
+
+    _videoPreviewProvider.loadVideoTrimmer();
   }
 
   @override
@@ -77,18 +79,7 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
         ],
         backgroundColor: options!.customizationOptions.appBarColor,
       ),
-      body: FutureBuilder(
-          future: _videoPreviewProvider.loadVideoTrimmer(),
-          builder: (ctx, snapshot){
-
-            if (snapshot.connectionState == ConnectionState.done){
-              return TrimmerView();
-            }
-
-            return Container();
-
-          }
-      ),
+      body: TrimmerView(),
     );
   }
 }

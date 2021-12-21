@@ -42,29 +42,30 @@ class VideoPreviewProvider extends ChangeNotifier{
 
     this.progressVisibility = true;
 
-    await this._trimmer.saveTrimmedVideo(
+    this._trimmer.saveTrimmedVideo(
       startValue: _startValue,
       endValue: _endValue,
-    ).then((result) {
+      onSave: (String? outputPath) {
 
-      this.progressVisibility = false;
+        this.progressVisibility = false;
 
-      List<PickedFile> pickedFiles = [];
+        List<PickedFile> pickedFiles = [];
 
-      if (files != null){
-        files!.map((file) {
-          pickedFiles.add(
-              PickedFile(
-                  path: result,
-                  name: basename(result)
-              )
-          );
-        }).toList();
+        if (files != null){
+          files!.map((file) {
+            pickedFiles.add(
+                PickedFile(
+                    path: outputPath,
+                    name: basename(outputPath!)
+                )
+            );
+          }).toList();
 
-        Navigator.pop(context, StoryPickerResult(pickedFiles: pickedFiles, resultType: ResultType.VIDEO));
+          Navigator.pop(context, StoryPickerResult(pickedFiles: pickedFiles, resultType: ResultType.VIDEO));
+        }
+
       }
-
-    });
+    );
 
   }
 

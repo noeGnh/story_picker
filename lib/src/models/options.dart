@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 class Options{
@@ -53,7 +51,7 @@ class GalleryCustomization{
     this.bgColor = Colors.white,
     this.maxSelectable = 1,
   }){
-    if (this.maxSelectable != null && this.maxSelectable <= 0) {
+    if (this.maxSelectable <= 0) {
       throw ArgumentError('The value must be greater than 0');
     }
   }

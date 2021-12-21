@@ -16,6 +16,7 @@ dependencies:
     path: ../
 
   cupertino_icons: ^1.0.4
+  video_player: ^2.2.9
 
 dev_dependencies:
   flutter_test:
@@ -23,6 +24,7 @@ dev_dependencies:
 
 dependency_overrides:
   provider: ^6.0.1
+  path: ^1.8.1
 
 flutter:
 

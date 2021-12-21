@@ -66,13 +66,13 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
         title: Consumer<GalleryProvider>(
             builder: (ctx, provider, child){
 
-              return provider.folders != null ? DropdownButtonHideUnderline(
+              return DropdownButtonHideUnderline(
                   child: DropdownButton<FolderModel>(
                     items: provider.getItems() as List<DropdownMenuItem<FolderModel>>?,
                     onChanged: (FolderModel? folder) => provider.onFolderSelected(folder!),
                     value: provider.selectedFolder,
                   )
-              ) : Container();
+              );
 
             }
         ),
@@ -307,12 +307,10 @@ class _GalleryItemState extends State<GalleryItem> with AutomaticKeepAliveClient
       fit: StackFit.expand,
       children: [
         GestureDetector(
-          child: File(widget.file!.thumbPath!) != null
-              ? Image.file(
+          child: Image.file(
             File(widget.file!.thumbPath!),
             fit: BoxFit.cover,
-          )
-              : Container(color: Colors.grey),
+          ),
           onTap: () {
             widget.provider!.selectedFile = widget.file;
             if (widget.provider!.multiSelect) widget.provider!.toggleCheckState(widget.file);
