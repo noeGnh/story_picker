@@ -1,11 +1,15 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path/path.dart';
+import 'package:story_picker/src/models/file_model.dart';
 import 'package:story_picker/src/models/options.dart';
 import 'package:story_picker/src/models/result.dart';
 import 'package:story_picker/src/utils/constants.dart';
 import 'package:story_picker/src/utils/utils.dart';
-import 'package:story_picker/src/widgets/gallery.dart';
+import 'package:story_picker/src/widgets/preview/image_preview.dart';
+import 'package:story_picker/src/widgets/preview/video_preview.dart';
 
 class TextProvider extends ChangeNotifier{
 
@@ -64,14 +68,58 @@ class TextProvider extends ChangeNotifier{
 
   openGalleryScreen(BuildContext context, Options? options) async {
 
-    StoryPickerResult? result = await Navigator.of(context).push(
-        PageTransition(
-            child: Gallery(options),
-            type: PageTransitionType.bottomToTop
-        )
+    const imgExtensions = ['jpg', 'png', 'jpeg'];
+    const vidExtensions = ['mp4', 'mkv'];
+
+    FilePickerResult? pickedResult = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: [ ...imgExtensions, ...vidExtensions ]
     );
 
-    if (result != null) Navigator.pop(context, result);
+    if (pickedResult != null) {
+
+      StoryPickerResult? result;
+
+      if (imgExtensions.contains( extension(pickedResult.files.single.path!).substring(1).toLowerCase() )){
+
+        result = await Navigator.of(context).push(
+            PageTransition(
+                child: ImagePreview(
+                    files: [FileModel(
+                        filePath: pickedResult.files.single.path!,
+                        relativePath: pickedResult.files.single.path!,
+                        thumbPath: pickedResult.files.single.path!,
+                        title: basename(pickedResult.files.single.path!)
+                    )],
+                    imagePreviewOptions: options,
+                    showAddButton: options!.customizationOptions.galleryCustomization.maxSelectable > 1
+                ),
+                type: PageTransitionType.bottomToTop
+            )
+        );
+
+      }else{
+
+        result = await Navigator.of(context).push(
+            PageTransition(
+                child: VideoPreview(
+                  files: [FileModel(
+                      filePath: pickedResult.files.single.path!,
+                      relativePath: pickedResult.files.single.path!,
+                      thumbPath: pickedResult.files.single.path!,
+                      title: basename(pickedResult.files.single.path!)
+                  )],
+                  imagePreviewOptions: options,
+                ),
+                type: PageTransitionType.bottomToTop
+            )
+        );
+
+      }
+
+      if (result != null) Navigator.pop(context, result);
+
+    }
 
   }
 
