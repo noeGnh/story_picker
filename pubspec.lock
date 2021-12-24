@@ -148,6 +148,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.2"
+  file_picker:
+    dependency: "direct main"
+    description:
+      name: file_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.3.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -498,7 +505,7 @@ packages:
       name: video_player
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.9"
+    version: "2.2.10"
   video_player_platform_interface:
     dependency: transitive
     description:
@@ -516,9 +523,11 @@ packages:
   video_thumbnail:
     dependency: "direct main"
     description:
-      name: video_thumbnail
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: "734a2d5"
+      resolved-ref: "734a2d5a05656ab93e9dab79d3b6d32b54e40e83"
+      url: "https://github.com/julek-kal/video_thumbnail"
+    source: git
     version: "0.4.3"
   video_trimmer:
     dependency: "direct main"
