@@ -299,12 +299,11 @@ class CameraProvider extends ChangeNotifier{
 
   openGalleryScreen(BuildContext context, Options? options) async {
 
-    const imgExtensions = ['jpg', 'png', 'jpeg'];
-    const vidExtensions = ['mp4', 'mkv'];
+    const imgExtensions = ['jpg', 'png', 'jpeg', 'gif', 'webp'];
+    const vidExtensions = ['mp4', 'mkv', 'mov', 'wmv', 'flv', 'avi', 'webm'];
 
     FilePickerResult? pickedResult = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: [ ...imgExtensions, ...vidExtensions ]
+        type: FileType.media,
     );
 
     if (pickedResult != null) {
@@ -329,7 +328,7 @@ class CameraProvider extends ChangeNotifier{
             )
         );
 
-      }else{
+      } else if (vidExtensions.contains( extension(pickedResult.files.single.path!).substring(1).toLowerCase() )){
 
         result = await Navigator.of(context).push(
             PageTransition(
