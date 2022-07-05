@@ -310,7 +310,7 @@ class _CaptureControlState extends State<CaptureControl> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
 
       widget.cameraProvider!.manageTooltip(context, superTooltip);
 

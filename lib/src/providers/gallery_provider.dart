@@ -80,8 +80,10 @@ class GalleryProvider extends ChangeNotifier{
 
     final String cacheDir = '${(await getTemporaryDirectory()).path}/galleryPicker';
 
-    var result = await PhotoManager.requestPermission();
-    if (result) {
+    PhotoManager.setIgnorePermissionCheck(true);
+
+    var permission = await PhotoManager.requestPermissionExtend();
+    if (permission.isAuth) {
 
       var paths = await PhotoManager.getAssetPathList(
           hasAll: false,
@@ -98,7 +100,7 @@ class GalleryProvider extends ChangeNotifier{
         AssetPathEntity path = paths[i];
 
         List<FileModel> fileList = [];
-        List<AssetEntity> assetList = await path.assetList;
+        List<AssetEntity> assetList = await path.getAssetListRange(start: 0, end: 10000);
 
         for(int y = 0; y < assetList.length; y++){
 

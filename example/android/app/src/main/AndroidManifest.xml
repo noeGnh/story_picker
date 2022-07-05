@@ -16,7 +16,7 @@
     <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
 
     <application
-        android:name="io.flutter.app.FlutterApplication"
+        android:name="${applicationName}"
         android:label="example"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -67,7 +67,7 @@ class ImagePreviewProvider extends ChangeNotifier{
 
   edit(FileModel file, Options options) async {
 
-    File? editResult = await ImageCropper.cropImage(
+    CroppedFile? editResult = await ImageCropper().cropImage(
         sourcePath: file.filePath!,
         cropStyle: CropStyle.rectangle,
         compressFormat: ImageCompressFormat.png,
@@ -78,28 +78,30 @@ class ImagePreviewProvider extends ChangeNotifier{
           CropAspectRatioPreset.ratio4x3,
           CropAspectRatioPreset.ratio16x9
         ],
-        androidUiSettings: AndroidUiSettings(
-            toolbarTitle: '',
-            toolbarColor: options.customizationOptions.appBarColor,
-            statusBarColor: options.customizationOptions.appBarColor,
-            backgroundColor: options.customizationOptions.appBarColor,
-            toolbarWidgetColor: options.customizationOptions.previewScreenCustomization.iconsColor,
-            activeControlsWidgetColor: options.customizationOptions.previewScreenCustomization.iconsColor,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false,
-            showCropGrid: true
-        ),
-        iosUiSettings: IOSUiSettings(
-            minimumAspectRatio: 1.0,
-            title: '',
-            doneButtonTitle: this._translations.save,
-            cancelButtonTitle: this._translations.cancel
-        )
+        uiSettings: [
+          AndroidUiSettings(
+              toolbarTitle: '',
+              toolbarColor: options.customizationOptions.appBarColor,
+              statusBarColor: options.customizationOptions.appBarColor,
+              backgroundColor: options.customizationOptions.appBarColor,
+              toolbarWidgetColor: options.customizationOptions.previewScreenCustomization.iconsColor,
+              activeControlsWidgetColor: options.customizationOptions.previewScreenCustomization.iconsColor,
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio: false,
+              showCropGrid: true
+          ),
+          IOSUiSettings(
+              minimumAspectRatio: 1.0,
+              title: '',
+              doneButtonTitle: this._translations.save,
+              cancelButtonTitle: this._translations.cancel
+          )
+        ],
     );
 
     if (editResult != null) {
 
-      this._updateFiles(file, editResult);
+      this._updateFiles(file, File(editResult.path));
 
     }
 
