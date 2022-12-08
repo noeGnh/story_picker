@@ -18,8 +18,7 @@ import 'package:story_picker/src/widgets/preview/image_preview.dart';
 import 'package:story_picker/src/widgets/preview/video_preview.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-class GalleryProvider extends ChangeNotifier{
-
+class GalleryProvider extends ChangeNotifier {
   final Logger logger = Logger();
 
   static const int VIDEO_LENGTH_LIMIT = 30;
@@ -41,24 +40,29 @@ class GalleryProvider extends ChangeNotifier{
   bool get multiSelect => this._multiSelect;
   int get multiSelectLimit => this._multiSelectLimit;
 
-  set multiSelect(bool b){
+  set multiSelect(bool b) {
     this._files.clear();
     this._multiSelect = b;
     notifyListeners();
   }
 
-  set selectedFile(FileModel? file){ this._selectedFile = file; notifyListeners(); }
+  set selectedFile(FileModel? file) {
+    this._selectedFile = file;
+    notifyListeners();
+  }
 
-  set translations(Translations translations){ this._translations = translations; }
+  set translations(Translations translations) {
+    this._translations = translations;
+  }
 
   getCheckNumber(FileModel? file) => this._files.indexOf(file) + 1;
 
   getCheckState(FileModel? file) => this._files.contains(file);
 
-  toggleCheckState(FileModel? file){
-    if (getCheckState(file)){
+  toggleCheckState(FileModel? file) {
+    if (getCheckState(file)) {
       this._files.remove(file);
-    }else{
+    } else {
       if (file!.type == AssetType.video) {
         StoryUtils.showToast(this._translations.multiSelectionDoesntSupportVideos);
         return;
@@ -75,7 +79,6 @@ class GalleryProvider extends ChangeNotifier{
   }
 
   getFilesPath() async {
-
     if (!await Permission.storage.request().isGranted) return;
 
     final String cacheDir = '${(await getTemporaryDirectory()).path}/galleryPicker';
@@ -84,79 +87,62 @@ class GalleryProvider extends ChangeNotifier{
 
     var permission = await PhotoManager.requestPermissionExtend();
     if (permission.isAuth) {
-
       var paths = await PhotoManager.getAssetPathList(
           hasAll: false,
           filterOption: FilterOptionGroup()
-            ..setOption(AssetType.video, FilterOption(
-                durationConstraint: const DurationConstraint(
+            ..setOption(
+                AssetType.video,
+                FilterOption(
+                    durationConstraint: const DurationConstraint(
                   max: Duration(minutes: VIDEO_LENGTH_LIMIT),
-                )
-            ))
-      );
+                ))));
 
-      for(int i = 0; i < paths.length; i++){
-
+      for (int i = 0; i < paths.length; i++) {
         AssetPathEntity path = paths[i];
 
         List<FileModel> fileList = [];
         List<AssetEntity> assetList = await path.getAssetListRange(start: 0, end: 10000);
 
-        for(int y = 0; y < assetList.length; y++){
-
-          File? file = await assetList[y].file; File? thumbFile;
+        for (int y = 0; y < assetList.length; y++) {
+          File? file = await assetList[y].file;
+          File? thumbFile;
 
           if (assetList[y].type == AssetType.image || assetList[y].type == AssetType.video) {
-
             if (['.mp4', '.png', '.jpg', '.jpeg', '.gif'].contains(extension(file!.path).toLowerCase())) {
-
-              try{
-
-                String thumbName =
-                (basename(file.path).split('.')[0] + path.id +
-                    (assetList[y].type == AssetType.video ? '.mp4' : '')).replaceAll(' ', '');
+              try {
+                String thumbName = (basename(file.path).split('.')[0] + path.id + (assetList[y].type == AssetType.video ? '.mp4' : '')).replaceAll(' ', '');
                 String thumbPath = '$cacheDir/$thumbName.jpg';
 
                 if (await File(thumbPath).exists()) {
-
                   thumbFile = File(thumbPath);
-
                 } else {
-
                   Uint8List? thumbBytes;
 
-                  if (assetList[y].type == AssetType.video){
-
+                  if (assetList[y].type == AssetType.video) {
                     thumbBytes = await VideoThumbnail.thumbnailData(
                       video: file.path,
                       imageFormat: ImageFormat.JPEG,
                       maxWidth: 128,
                       quality: 95,
                     );
-
-                  }else{
-
+                  } else {
                     thumbBytes = await FlutterImageCompress.compressWithFile(
                       file.path,
                       minHeight: 144,
                       minWidth: 144,
                       quality: 95,
                     );
-
                   }
 
                   thumbFile = await File(thumbPath).create(recursive: true);
 
                   thumbFile = await thumbFile.writeAsBytes(thumbBytes!);
-
                 }
-
-              }catch(e){
+              } catch (e) {
                 print(e);
               }
 
-              if (thumbFile != null){
-
+              if (thumbFile != null) {
                 fileList.add(FileModel(
                     duration: assetList[y].videoDuration,
                     type: assetList[y].type,
@@ -170,53 +156,41 @@ class GalleryProvider extends ChangeNotifier{
                     title: assetList[y].title,
                     relativePath: assetList[y].relativePath,
                     filePath: file.path,
-                    thumbPath: thumbFile.path
-                ));
-
+                    thumbPath: thumbFile.path));
               }
-
             }
-
           }
-
         }
 
         if (fileList.isNotEmpty) {
+          this._folders.add(FolderModel(files: fileList, name: path.name, id: path.id, type: path.albumType, count: await path.assetCountAsync));
 
-          this._folders.add(FolderModel(
-              files: fileList,
-              name: path.name,
-              id: path.id,
-              type: path.albumType,
-              count: path.assetCount
-          ));
-
-          if (this._folders.length == 1){
-
+          if (this._folders.length == 1) {
             this._selectedFolder = this._folders[0];
             this._selectedFile = this._folders[0].files![0];
-
           }
-
         }
 
         notifyListeners();
-
       }
-
     }
-
   }
 
   List<DropdownMenuItem> getItems() {
-    return this._folders.map((e) => DropdownMenuItem(
-      child: SizedBox(
-        width: 190,
-        child: Text(e.name!, textAlign: TextAlign.start, overflow: TextOverflow.ellipsis,),
-      ),
-      value: e,
-    )
-    ).toList();
+    return this
+        ._folders
+        .map((e) => DropdownMenuItem(
+              child: SizedBox(
+                width: 190,
+                child: Text(
+                  e.name!,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              value: e,
+            ))
+        .toList();
   }
 
   void onFolderSelected(FolderModel folder, {int index = 0}) {
@@ -230,69 +204,42 @@ class GalleryProvider extends ChangeNotifier{
   }
 
   void submit(BuildContext context, Options? options) async {
-
     if (this._multiSelect) {
-
       this._returnImageResult(context, options!);
-
     } else {
-
-      if (this._selectedFile != null){
-
+      if (this._selectedFile != null) {
         this._files.clear();
         this._files.add(this._selectedFile);
 
         if (this._selectedFile!.type == AssetType.video) {
-
           if (this._selectedFile!.duration != null && this._selectedFile!.duration!.inMinutes < VIDEO_LENGTH_LIMIT) {
-
-            StoryPickerResult? result = await Navigator.of(context).push(
-                PageTransition(
-                    child: VideoPreview(
-                      files: this._files,
-                      imagePreviewOptions: options,
-                    ),
-                    type: PageTransitionType.bottomToTop
-                )
-            );
+            StoryPickerResult? result = await Navigator.of(context).push(PageTransition(
+                child: VideoPreview(
+                  files: this._files,
+                  imagePreviewOptions: options,
+                ),
+                type: PageTransitionType.bottomToTop));
 
             if (result != null) Navigator.pop(context, result);
-
           } else {
             logger.w('Too long video !');
           }
-
         } else {
-
           this._returnImageResult(context, options!);
-
         }
-
-      }else{
+      } else {
         logger.i('No file selected');
       }
-
     }
-
   }
 
   void _returnImageResult(BuildContext context, Options options) async {
-
     this.selectedFile = this._files[0];
 
-    StoryPickerResult? result = await Navigator.of(context).push(
-        PageTransition(
-            child: ImagePreview(
-                files: this._files,
-                imagePreviewOptions: options,
-                showAddButton: options.customizationOptions.galleryCustomization.maxSelectable > 1
-            ),
-            type: PageTransitionType.bottomToTop
-        )
-    );
+    StoryPickerResult? result = await Navigator.of(context).push(PageTransition(
+        child: ImagePreview(files: this._files, imagePreviewOptions: options, showAddButton: options.customizationOptions.galleryCustomization.maxSelectable > 1),
+        type: PageTransitionType.bottomToTop));
 
     if (result != null) Navigator.pop(context, result);
-
   }
-
 }

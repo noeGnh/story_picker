@@ -363,4 +363,3 @@ class _GalleryItemState extends State<GalleryItem> with AutomaticKeepAliveClient
     ) : Container();
   }
 }
-

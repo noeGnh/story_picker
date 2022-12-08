@@ -59,4 +59,3 @@ class _PickerViewState extends State<PickerView> {
     return Camera(cameraOptions : widget.options);
   }
 }
-

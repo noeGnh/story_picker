@@ -24,7 +24,7 @@ class TextProvider extends ChangeNotifier{
     textEditingController = TextEditingController();
     keyboardVisibilityController = KeyboardVisibilityController();
   }
-  
+
   switchTextFont(){
     if (textFontIndex! + 1 >= StoryConstants.fonts.length) {
       textFontIndex = 0;
@@ -34,7 +34,7 @@ class TextProvider extends ChangeNotifier{
 
     notifyListeners();
   }
-  
+
   switchTextAlign(){
     if (textAlignIndex! + 1 >= StoryConstants.textAlignments.length) {
       textAlignIndex = 0;
