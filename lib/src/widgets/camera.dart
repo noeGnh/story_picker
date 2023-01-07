@@ -349,10 +349,10 @@ class _CaptureControlState extends State<CaptureControl> {
             Positioned.fill(
               child: Align(
                 alignment: Alignment.center,
-                child: GestureDetector(
-                  child: JustTheTooltip(
-                    preferredDirection: AxisDirection.up,
-                    controller: tooltipController,
+                child: JustTheTooltip(
+                  preferredDirection: AxisDirection.up,
+                  controller: tooltipController,
+                  child: GestureDetector(
                     child: Container(
                       width: 68,
                       height: 68,
@@ -361,16 +361,16 @@ class _CaptureControlState extends State<CaptureControl> {
                         color: options!.customizationOptions.cameraCustomization.iconsColor,
                       ),
                     ),
-                    content: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        options!.translations.pressAndHoldToRecordAVideo,
-                      ),
+                    onLongPressStart: (d) => widget.cameraProvider!.startVideoRecording(context, mounted),
+                    onLongPressEnd: (d) => widget.cameraProvider!.stopVideoRecording(context, mounted),
+                    onTap: () => widget.cameraProvider!.onCapturePressed(context, options),
+                  ),
+                  content: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      options!.translations.pressAndHoldToRecordAVideo,
                     ),
                   ),
-                  onLongPressStart: (d) => widget.cameraProvider!.startVideoRecording(context, mounted),
-                  onLongPressEnd: (d) => widget.cameraProvider!.stopVideoRecording(context, mounted),
-                  onTap: () => widget.cameraProvider!.onCapturePressed(context, options),
                 ),
               ),
             ),
