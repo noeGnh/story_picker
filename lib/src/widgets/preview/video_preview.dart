@@ -8,10 +8,9 @@ import 'package:video_trimmer/video_trimmer.dart';
 Options? options;
 
 class VideoPreview extends StatelessWidget {
-
   final List<FileModel?>? files;
 
-  VideoPreview({required Options? imagePreviewOptions, this.files}){
+  VideoPreview({required Options? imagePreviewOptions, this.files}) {
     options = imagePreviewOptions;
   }
 
@@ -22,7 +21,6 @@ class VideoPreview extends StatelessWidget {
       child: VideoPreviewContent(files: this.files),
     );
   }
-
 }
 
 class VideoPreviewContent extends StatefulWidget {
@@ -53,13 +51,16 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
       backgroundColor: options!.customizationOptions.previewScreenCustomization.bgColor,
       appBar: AppBar(
         elevation: 0.0,
-        title: Text(options!.translations.preview, style: TextStyle(color: options!.customizationOptions.previewScreenCustomization.textColor),),
+        title: Text(
+          options!.translations.preview,
+          style: TextStyle(color: options!.customizationOptions.previewScreenCustomization.textColor),
+        ),
         leading: GestureDetector(
           child: Icon(
             Icons.arrow_back,
             color: options!.customizationOptions.previewScreenCustomization.iconsColor,
           ),
-          onTap: (){
+          onTap: () {
             Navigator.pop(context, null);
           },
         ),
@@ -69,10 +70,10 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Icon(
                 Icons.check,
-                color:options!.customizationOptions.previewScreenCustomization.iconsColor,
+                color: options!.customizationOptions.previewScreenCustomization.iconsColor,
               ),
             ),
-            onTap: (){
+            onTap: () {
               _videoPreviewProvider.submit(context);
             },
           )
@@ -92,70 +93,68 @@ class TrimmerView extends StatefulWidget {
 class _TrimmerViewState extends State<TrimmerView> {
   @override
   Widget build(BuildContext context) {
-
-    return Consumer<VideoPreviewProvider>(
-        builder: (ctx, provider, child){
-          return Container(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Visibility(
-                  visible: provider.progressVisibility,
-                  child: LinearProgressIndicator(
-                    backgroundColor: options!.customizationOptions.accentColor,
-                  ),
-                ),
-                Expanded(
-                  child: VideoViewer(trimmer: provider.trimmer),
-                ),
-                Center(
-                  child: TrimEditor(
-                    viewerHeight: 50.0,
-                    trimmer: provider.trimmer,
-                    viewerWidth: MediaQuery.of(context).size.width,
-                    maxVideoLength: Duration(seconds: options!.customizationOptions.videoDurationLimitInSeconds),
-                    durationTextStyle: TextStyle(color: options!.customizationOptions.previewScreenCustomization.textColor),
-                    scrubberPaintColor: options!.customizationOptions.accentColor,
-                    borderPaintColor: options!.customizationOptions.accentColor,
-                    circlePaintColor: options!.customizationOptions.accentColor,
-                    onChangeStart: (value) {
-                      provider.startValue = value;
-                    },
-                    onChangeEnd: (value) {
-                      provider.endValue = value;
-                    },
-                    onChangePlaybackState: (value) {
-                      provider.isPlaying = value;
-                    },
-                  ),
-                ),
-                TextButton(
-                  child: provider.isPlaying!
-                      ? Icon(
-                    Icons.pause,
-                    size: 80.0,
-                    color: options!.customizationOptions.previewScreenCustomization.iconsColor,
-                  )
-                      : Icon(
-                    Icons.play_arrow,
-                    size: 80.0,
-                    color: options!.customizationOptions.previewScreenCustomization.iconsColor,
-                  ),
-                  onPressed: () async {
-                    bool? playbackState = await provider.trimmer.videPlaybackControl(
-                      startValue: provider.startValue,
-                      endValue: provider.endValue,
-                    );
-                    provider.isPlaying = playbackState;
-                  },
-                )
-              ],
+    return Consumer<VideoPreviewProvider>(builder: (ctx, provider, child) {
+      return Container(
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Visibility(
+              visible: provider.progressVisibility,
+              child: LinearProgressIndicator(
+                backgroundColor: options!.customizationOptions.accentColor,
+              ),
             ),
-          );
-        }
-    );
-
+            Expanded(
+              child: VideoViewer(trimmer: provider.trimmer),
+            ),
+            Center(
+              child: TrimViewer(
+                viewerHeight: 50.0,
+                trimmer: provider.trimmer,
+                viewerWidth: MediaQuery.of(context).size.width,
+                maxVideoLength: Duration(seconds: options!.customizationOptions.videoDurationLimitInSeconds),
+                durationTextStyle: TextStyle(color: options!.customizationOptions.previewScreenCustomization.textColor),
+                editorProperties: TrimEditorProperties(
+                  scrubberPaintColor: options!.customizationOptions.accentColor,
+                  borderPaintColor: options!.customizationOptions.accentColor,
+                  circlePaintColor: options!.customizationOptions.accentColor,
+                ),
+                onChangeStart: (value) {
+                  provider.startValue = value;
+                },
+                onChangeEnd: (value) {
+                  provider.endValue = value;
+                },
+                onChangePlaybackState: (value) {
+                  provider.isPlaying = value;
+                },
+              ),
+            ),
+            TextButton(
+              child: provider.isPlaying!
+                  ? Icon(
+                      Icons.pause,
+                      size: 80.0,
+                      color: options!.customizationOptions.previewScreenCustomization.iconsColor,
+                    )
+                  : Icon(
+                      Icons.play_arrow,
+                      size: 80.0,
+                      color: options!.customizationOptions.previewScreenCustomization.iconsColor,
+                    ),
+              onPressed: () async {
+                bool? playbackState = await provider.trimmer.videPlaybackControl(
+                  startValue: provider.startValue,
+                  endValue: provider.endValue,
+                );
+                provider.isPlaying = playbackState;
+              },
+            )
+          ],
+        ),
+      );
+    });
   }
 }
