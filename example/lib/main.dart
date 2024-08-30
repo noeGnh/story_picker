@@ -16,10 +16,11 @@ class App extends StatelessWidget {
       title: "Example",
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-          appBar: AppBar(
-            title: Text("Example"),
-          ),
-          body: Content()
+        appBar: AppBar(
+          title: Text("Example"),
+        ),
+        body: Content(),
+        backgroundColor: Colors.blue,
       ),
     );
   }
@@ -31,7 +32,6 @@ class Content extends StatefulWidget {
 }
 
 class _ContentState extends State<Content> {
-
   String? mediaPath;
   ResultType? mediaType;
 
@@ -46,25 +46,20 @@ class _ContentState extends State<Content> {
           Container(
             width: 300,
             height: 300,
-            child: mediaPath != null && mediaType != null
-                 ? (mediaType == ResultType.IMAGE ? Image.file(File(mediaPath!)) : VideoPlayerWidget(mediaPath!))
-                 : Container(),
+            child: mediaPath != null && mediaType != null ? (mediaType == ResultType.IMAGE ? Image.file(File(mediaPath!)) : VideoPlayerWidget(mediaPath!)) : Container(),
           ),
           ElevatedButton(
             onPressed: () async {
-              var result = await StoryPicker.pick(context,
-                  transitionType: PageTransitionType.leftToRight,
-                  options: Options(
-                      settingsTarget: Settings()
-                  )
+              var result = await StoryPicker.pick(
+                context,
+                transitionType: PageTransitionType.leftToRight,
+                options: Options(settingsTarget: Settings()),
               );
-              if (result != null){
-
+              if (result != null) {
                 mediaPath = result.pickedFiles![0].path;
                 mediaType = result.resultType;
-
               }
-              setState(() { });
+              setState(() {});
             },
             child: Text('Pick It'),
           )

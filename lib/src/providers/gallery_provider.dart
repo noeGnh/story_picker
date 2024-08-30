@@ -88,14 +88,17 @@ class GalleryProvider extends ChangeNotifier {
     var permission = await PhotoManager.requestPermissionExtend();
     if (permission.isAuth) {
       var paths = await PhotoManager.getAssetPathList(
-          hasAll: false,
-          filterOption: FilterOptionGroup()
-            ..setOption(
-                AssetType.video,
-                FilterOption(
-                    durationConstraint: const DurationConstraint(
-                  max: Duration(minutes: VIDEO_LENGTH_LIMIT),
-                ))));
+        hasAll: false,
+        filterOption: FilterOptionGroup()
+          ..setOption(
+            AssetType.video,
+            FilterOption(
+              durationConstraint: const DurationConstraint(
+                max: Duration(minutes: VIDEO_LENGTH_LIMIT),
+              ),
+            ),
+          ),
+      );
 
       for (int i = 0; i < paths.length; i++) {
         AssetPathEntity path = paths[i];
@@ -143,7 +146,8 @@ class GalleryProvider extends ChangeNotifier {
               }
 
               if (thumbFile != null) {
-                fileList.add(FileModel(
+                fileList.add(
+                  FileModel(
                     duration: assetList[y].videoDuration,
                     type: assetList[y].type,
                     size: assetList[y].size,
@@ -156,14 +160,22 @@ class GalleryProvider extends ChangeNotifier {
                     title: assetList[y].title,
                     relativePath: assetList[y].relativePath,
                     filePath: file.path,
-                    thumbPath: thumbFile.path));
+                    thumbPath: thumbFile.path,
+                  ),
+                );
               }
             }
           }
         }
 
         if (fileList.isNotEmpty) {
-          this._folders.add(FolderModel(files: fileList, name: path.name, id: path.id, type: path.albumType, count: await path.assetCountAsync));
+          this._folders.add(FolderModel(
+                files: fileList,
+                name: path.name,
+                id: path.id,
+                type: path.albumType,
+                count: await path.assetCountAsync,
+              ));
 
           if (this._folders.length == 1) {
             this._selectedFolder = this._folders[0];
@@ -179,17 +191,19 @@ class GalleryProvider extends ChangeNotifier {
   List<DropdownMenuItem> getItems() {
     return this
         ._folders
-        .map((e) => DropdownMenuItem(
-              child: SizedBox(
-                width: 190,
-                child: Text(
-                  e.name!,
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.ellipsis,
-                ),
+        .map(
+          (e) => DropdownMenuItem(
+            child: SizedBox(
+              width: 190,
+              child: Text(
+                e.name!,
+                textAlign: TextAlign.start,
+                overflow: TextOverflow.ellipsis,
               ),
-              value: e,
-            ))
+            ),
+            value: e,
+          ),
+        )
         .toList();
   }
 
@@ -213,12 +227,15 @@ class GalleryProvider extends ChangeNotifier {
 
         if (this._selectedFile!.type == AssetType.video) {
           if (this._selectedFile!.duration != null && this._selectedFile!.duration!.inMinutes < VIDEO_LENGTH_LIMIT) {
-            StoryPickerResult? result = await Navigator.of(context).push(PageTransition(
+            StoryPickerResult? result = await Navigator.of(context).push(
+              PageTransition(
                 child: VideoPreview(
                   files: this._files,
                   imagePreviewOptions: options,
                 ),
-                type: PageTransitionType.bottomToTop));
+                type: PageTransitionType.bottomToTop,
+              ),
+            );
 
             if (result != null) Navigator.pop(context, result);
           } else {
@@ -236,9 +253,16 @@ class GalleryProvider extends ChangeNotifier {
   void _returnImageResult(BuildContext context, Options options) async {
     this.selectedFile = this._files[0];
 
-    StoryPickerResult? result = await Navigator.of(context).push(PageTransition(
-        child: ImagePreview(files: this._files, imagePreviewOptions: options, showAddButton: options.customizationOptions.galleryCustomization.maxSelectable > 1),
-        type: PageTransitionType.bottomToTop));
+    StoryPickerResult? result = await Navigator.of(context).push(
+      PageTransition(
+        child: ImagePreview(
+          files: this._files,
+          imagePreviewOptions: options,
+          showAddButton: options.customizationOptions.galleryCustomization.maxSelectable > 1,
+        ),
+        type: PageTransitionType.bottomToTop,
+      ),
+    );
 
     if (result != null) Navigator.pop(context, result);
   }

@@ -121,12 +121,15 @@ class CameraProvider extends ChangeNotifier {
         path = file.path;
       });
 
-      StoryPickerResult? result = await Navigator.of(context).push(MaterialPageRoute(
+      StoryPickerResult? result = await Navigator.of(context).push(
+        MaterialPageRoute(
           builder: (ctx) => ImagePreview(
-                files: [FileModel(filePath: path, title: basename(path!))],
-                imagePreviewOptions: options,
-                showAddButton: false,
-              )));
+            files: [FileModel(filePath: path, title: basename(path!))],
+            imagePreviewOptions: options,
+            showAddButton: false,
+          ),
+        ),
+      );
 
       if (result != null) Navigator.pop(context, result);
     } catch (e) {
@@ -179,17 +182,25 @@ class CameraProvider extends ChangeNotifier {
           content: new Text(this._translations.whatDoYouWantToDo),
           actions: <Widget>[
             new TextButton(
-                child: new Text(this._translations.delete),
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true).pop();
-                }),
+              child: new Text(this._translations.delete),
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
+              },
+            ),
             new TextButton(
-                child: new Text(this._translations.validate),
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true).pop();
+              child: new Text(this._translations.validate),
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
 
-                  Navigator.pop(context, StoryPickerResult(pickedFiles: [PickedFile(path: videoPath, name: basename(videoPath!))], resultType: ResultType.VIDEO));
-                }),
+                Navigator.pop(
+                  context,
+                  StoryPickerResult(
+                    pickedFiles: [PickedFile(path: videoPath, name: basename(videoPath!))],
+                    resultType: ResultType.VIDEO,
+                  ),
+                );
+              },
+            ),
           ],
         );
       },
@@ -247,7 +258,10 @@ class CameraProvider extends ChangeNotifier {
   }
 
   openSettingsScreen(BuildContext context, dynamic target) async {
-    await Navigator.of(context).push(PageTransition(child: target, type: PageTransitionType.leftToRight));
+    await Navigator.of(context).push(PageTransition(
+      child: target,
+      type: PageTransitionType.leftToRight,
+    ));
   }
 
   openGalleryScreen(BuildContext context, Options? options) async {
@@ -262,28 +276,40 @@ class CameraProvider extends ChangeNotifier {
       StoryPickerResult? result;
 
       if (imgExtensions.contains(extension(pickedResult.files.single.path!).substring(1).toLowerCase())) {
-        result = await Navigator.of(context).push(PageTransition(
-            child: ImagePreview(files: [
-              FileModel(
+        result = await Navigator.of(context).push(
+          PageTransition(
+            child: ImagePreview(
+              files: [
+                FileModel(
                   filePath: pickedResult.files.single.path!,
                   relativePath: pickedResult.files.single.path!,
                   thumbPath: pickedResult.files.single.path!,
-                  title: basename(pickedResult.files.single.path!))
-            ], imagePreviewOptions: options, showAddButton: options!.customizationOptions.galleryCustomization.maxSelectable > 1),
-            type: PageTransitionType.bottomToTop));
+                  title: basename(pickedResult.files.single.path!),
+                ),
+              ],
+              imagePreviewOptions: options,
+              showAddButton: options!.customizationOptions.galleryCustomization.maxSelectable > 1,
+            ),
+            type: PageTransitionType.bottomToTop,
+          ),
+        );
       } else if (vidExtensions.contains(extension(pickedResult.files.single.path!).substring(1).toLowerCase())) {
-        result = await Navigator.of(context).push(PageTransition(
+        result = await Navigator.of(context).push(
+          PageTransition(
             child: VideoPreview(
               files: [
                 FileModel(
-                    filePath: pickedResult.files.single.path!,
-                    relativePath: pickedResult.files.single.path!,
-                    thumbPath: pickedResult.files.single.path!,
-                    title: basename(pickedResult.files.single.path!))
+                  filePath: pickedResult.files.single.path!,
+                  relativePath: pickedResult.files.single.path!,
+                  thumbPath: pickedResult.files.single.path!,
+                  title: basename(pickedResult.files.single.path!),
+                )
               ],
               imagePreviewOptions: options,
             ),
-            type: PageTransitionType.bottomToTop));
+            type: PageTransitionType.bottomToTop,
+          ),
+        );
       }
 
       if (result != null) Navigator.pop(context, result);
@@ -291,7 +317,12 @@ class CameraProvider extends ChangeNotifier {
   }
 
   openTextScreen(BuildContext context, Options? options) async {
-    StoryPickerResult? result = await Navigator.of(context).push(PageTransition(child: textScreen.Text(options), type: PageTransitionType.bottomToTop));
+    StoryPickerResult? result = await Navigator.of(context).push(
+      PageTransition(
+        child: textScreen.Text(options),
+        type: PageTransitionType.bottomToTop,
+      ),
+    );
 
     if (result != null) Navigator.pop(context, result);
   }

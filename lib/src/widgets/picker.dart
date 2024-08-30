@@ -5,26 +5,21 @@ import 'package:story_picker/src/providers/picker_provider.dart';
 import 'package:story_picker/src/widgets/camera.dart';
 import 'package:story_picker/story_picker.dart';
 
-class StoryPicker{
-
+class StoryPicker {
   static Future<StoryPickerResult?> pick(
-      BuildContext context,
-      {
-        required PageTransitionType transitionType,
-        Options? options
-      }
-  ) async
-  => await Navigator.of(context).push(
-      PageTransition(
+    BuildContext context, {
+    required PageTransitionType transitionType,
+    Options? options,
+  }) async =>
+      await Navigator.of(context).push(
+        PageTransition(
           child: Picker(options: options),
-          type: transitionType
-      )
-  );
-
+          type: transitionType,
+        ),
+      );
 }
 
 class Picker extends StatelessWidget {
-
   final Options? options;
 
   Picker({this.options});
@@ -39,23 +34,22 @@ class Picker extends StatelessWidget {
       child: PickerView(options: options),
     );
   }
-
 }
 
 class PickerView extends StatefulWidget {
-
   final Options? options;
 
   PickerView({Key? key, this.options}) : super(key: key);
 
   @override
   _PickerViewState createState() => _PickerViewState();
-
 }
 
 class _PickerViewState extends State<PickerView> {
   @override
   Widget build(BuildContext context) {
-    return Camera(cameraOptions : widget.options);
+    return Camera(
+      cameraOptions: widget.options,
+    );
   }
 }

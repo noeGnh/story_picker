@@ -93,68 +93,70 @@ class TrimmerView extends StatefulWidget {
 class _TrimmerViewState extends State<TrimmerView> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<VideoPreviewProvider>(builder: (ctx, provider, child) {
-      return Container(
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Visibility(
-              visible: provider.progressVisibility,
-              child: LinearProgressIndicator(
-                backgroundColor: options!.customizationOptions.accentColor,
-              ),
-            ),
-            Expanded(
-              child: VideoViewer(trimmer: provider.trimmer),
-            ),
-            Center(
-              child: TrimViewer(
-                viewerHeight: 50.0,
-                trimmer: provider.trimmer,
-                viewerWidth: MediaQuery.of(context).size.width,
-                maxVideoLength: Duration(seconds: options!.customizationOptions.videoDurationLimitInSeconds),
-                durationTextStyle: TextStyle(color: options!.customizationOptions.previewScreenCustomization.textColor),
-                editorProperties: TrimEditorProperties(
-                  scrubberPaintColor: options!.customizationOptions.accentColor,
-                  borderPaintColor: options!.customizationOptions.accentColor,
-                  circlePaintColor: options!.customizationOptions.accentColor,
+    return Consumer<VideoPreviewProvider>(
+      builder: (ctx, provider, child) {
+        return Container(
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Visibility(
+                visible: provider.progressVisibility,
+                child: LinearProgressIndicator(
+                  backgroundColor: options!.customizationOptions.accentColor,
                 ),
-                onChangeStart: (value) {
-                  provider.startValue = value;
-                },
-                onChangeEnd: (value) {
-                  provider.endValue = value;
-                },
-                onChangePlaybackState: (value) {
-                  provider.isPlaying = value;
-                },
               ),
-            ),
-            TextButton(
-              child: provider.isPlaying!
-                  ? Icon(
-                      Icons.pause,
-                      size: 80.0,
-                      color: options!.customizationOptions.previewScreenCustomization.iconsColor,
-                    )
-                  : Icon(
-                      Icons.play_arrow,
-                      size: 80.0,
-                      color: options!.customizationOptions.previewScreenCustomization.iconsColor,
-                    ),
-              onPressed: () async {
-                bool? playbackState = await provider.trimmer.videPlaybackControl(
-                  startValue: provider.startValue,
-                  endValue: provider.endValue,
-                );
-                provider.isPlaying = playbackState;
-              },
-            )
-          ],
-        ),
-      );
-    });
+              Expanded(
+                child: VideoViewer(trimmer: provider.trimmer),
+              ),
+              Center(
+                child: TrimViewer(
+                  viewerHeight: 50.0,
+                  trimmer: provider.trimmer,
+                  viewerWidth: MediaQuery.of(context).size.width,
+                  maxVideoLength: Duration(seconds: options!.customizationOptions.videoDurationLimitInSeconds),
+                  durationTextStyle: TextStyle(color: options!.customizationOptions.previewScreenCustomization.textColor),
+                  editorProperties: TrimEditorProperties(
+                    scrubberPaintColor: options!.customizationOptions.accentColor,
+                    borderPaintColor: options!.customizationOptions.accentColor,
+                    circlePaintColor: options!.customizationOptions.accentColor,
+                  ),
+                  onChangeStart: (value) {
+                    provider.startValue = value;
+                  },
+                  onChangeEnd: (value) {
+                    provider.endValue = value;
+                  },
+                  onChangePlaybackState: (value) {
+                    provider.isPlaying = value;
+                  },
+                ),
+              ),
+              TextButton(
+                child: provider.isPlaying!
+                    ? Icon(
+                        Icons.pause,
+                        size: 80.0,
+                        color: options!.customizationOptions.previewScreenCustomization.iconsColor,
+                      )
+                    : Icon(
+                        Icons.play_arrow,
+                        size: 80.0,
+                        color: options!.customizationOptions.previewScreenCustomization.iconsColor,
+                      ),
+                onPressed: () async {
+                  bool? playbackState = await provider.trimmer.videPlaybackControl(
+                    startValue: provider.startValue,
+                    endValue: provider.endValue,
+                  );
+                  provider.isPlaying = playbackState;
+                },
+              )
+            ],
+          ),
+        );
+      },
+    );
   }
 }

@@ -5,8 +5,11 @@ class Options {
   Translations translations;
   CustomizationOptions customizationOptions;
 
-  Options({this.settingsTarget, Translations? translations, CustomizationOptions? customizationOptions})
-      : this.translations = translations ?? Translations(),
+  Options({
+    this.settingsTarget,
+    Translations? translations,
+    CustomizationOptions? customizationOptions,
+  })  : this.translations = translations ?? Translations(),
         this.customizationOptions = customizationOptions ?? CustomizationOptions();
 }
 
@@ -19,15 +22,15 @@ class CustomizationOptions {
   GalleryCustomization galleryCustomization;
   PreviewScreenCustomization previewScreenCustomization;
 
-  CustomizationOptions(
-      {this.accentColor = Colors.black,
-      this.appBarColor = Colors.white,
-      this.videoDurationLimitInSeconds = 15,
-      TextCustomization? textCustomization,
-      CameraCustomization? cameraCustomization,
-      GalleryCustomization? galleryCustomization,
-      PreviewScreenCustomization? previewScreenCustomization})
-      : this.textCustomization = textCustomization ?? TextCustomization(),
+  CustomizationOptions({
+    this.accentColor = Colors.black,
+    this.appBarColor = Colors.white,
+    this.videoDurationLimitInSeconds = 15,
+    TextCustomization? textCustomization,
+    CameraCustomization? cameraCustomization,
+    GalleryCustomization? galleryCustomization,
+    PreviewScreenCustomization? previewScreenCustomization,
+  })  : this.textCustomization = textCustomization ?? TextCustomization(),
         this.cameraCustomization = cameraCustomization ?? CameraCustomization(),
         this.galleryCustomization = galleryCustomization ?? GalleryCustomization(),
         this.previewScreenCustomization = previewScreenCustomization ?? PreviewScreenCustomization();
@@ -53,13 +56,18 @@ class CameraCustomization {
   Color iconsColor;
   Color videoCaptureProgressIndicatorColor;
 
-  CameraCustomization({this.iconsColor = Colors.white, this.videoCaptureProgressIndicatorColor = Colors.red});
+  CameraCustomization({
+    this.iconsColor = Colors.white,
+    this.videoCaptureProgressIndicatorColor = Colors.red,
+  });
 }
 
 class TextCustomization {
   Color iconsColor;
 
-  TextCustomization({this.iconsColor = Colors.white});
+  TextCustomization({
+    this.iconsColor = Colors.white,
+  });
 }
 
 class PreviewScreenCustomization {
@@ -67,7 +75,11 @@ class PreviewScreenCustomization {
   Color textColor;
   Color bgColor;
 
-  PreviewScreenCustomization({this.iconsColor = Colors.black, this.textColor = Colors.black, this.bgColor = Colors.white});
+  PreviewScreenCustomization({
+    this.iconsColor = Colors.black,
+    this.textColor = Colors.black,
+    this.bgColor = Colors.white,
+  });
 }
 
 class Translations {
@@ -83,16 +95,17 @@ class Translations {
   String delete;
   String validate;
 
-  Translations(
-      {this.preview = 'Preview',
-      this.pressToWrite = 'Press to write',
-      this.pressAndHoldToRecordAVideo = 'Press and hold to record a video',
-      this.multiSelectionDoesntSupportVideos = 'Multi-selection does not support videos',
-      this.filters = 'Filters',
-      this.save = 'Save',
-      this.cancel = 'Cancel',
-      this.recordedVideo = 'Recorded Video',
-      this.whatDoYouWantToDo = 'What do you want to do ?',
-      this.delete = 'Delete',
-      this.validate = 'Validate'});
+  Translations({
+    this.preview = 'Preview',
+    this.pressToWrite = 'Press to write',
+    this.pressAndHoldToRecordAVideo = 'Press and hold to record a video',
+    this.multiSelectionDoesntSupportVideos = 'Multi-selection does not support videos',
+    this.filters = 'Filters',
+    this.save = 'Save',
+    this.cancel = 'Cancel',
+    this.recordedVideo = 'Recorded Video',
+    this.whatDoYouWantToDo = 'What do you want to do ?',
+    this.delete = 'Delete',
+    this.validate = 'Validate',
+  });
 }

@@ -17,8 +17,9 @@ import 'package:visibility_detector/visibility_detector.dart';
 Options? options;
 
 class Gallery extends StatelessWidget {
-
-  Gallery(Options? opt) { options = opt; }
+  Gallery(Options? opt) {
+    options = opt;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,6 @@ class Gallery extends StatelessWidget {
       child: GalleryView(),
     );
   }
-
 }
 
 class GalleryView extends StatefulWidget {
@@ -35,7 +35,7 @@ class GalleryView extends StatefulWidget {
   _GalleryViewState createState() => _GalleryViewState();
 }
 
-class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClientMixin{
+class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClientMixin {
   late GalleryProvider galleryProvider;
 
   @override
@@ -45,7 +45,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
   void initState() {
     super.initState();
 
-    galleryProvider =  Provider.of<GalleryProvider>(context, listen: false);
+    galleryProvider = Provider.of<GalleryProvider>(context, listen: false);
     galleryProvider.getFilesPath();
 
     galleryProvider.translations = options!.translations;
@@ -63,25 +63,21 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
       backgroundColor: options!.customizationOptions.galleryCustomization.bgColor,
       appBar: AppBar(
         elevation: 0.0,
-        title: Consumer<GalleryProvider>(
-            builder: (ctx, provider, child){
-
-              return DropdownButtonHideUnderline(
-                  child: DropdownButton<FolderModel>(
-                    items: provider.getItems() as List<DropdownMenuItem<FolderModel>>?,
-                    onChanged: (FolderModel? folder) => provider.onFolderSelected(folder!),
-                    value: provider.selectedFolder,
-                  )
-              );
-
-            }
-        ),
+        title: Consumer<GalleryProvider>(builder: (ctx, provider, child) {
+          return DropdownButtonHideUnderline(
+            child: DropdownButton<FolderModel>(
+              items: provider.getItems() as List<DropdownMenuItem<FolderModel>>?,
+              onChanged: (FolderModel? folder) => provider.onFolderSelected(folder!),
+              value: provider.selectedFolder,
+            ),
+          );
+        }),
         leading: GestureDetector(
           child: Icon(
             Icons.clear,
             color: options!.customizationOptions.galleryCustomization.iconsColor,
           ),
-          onTap: (){
+          onTap: () {
             Navigator.pop(context, null);
           },
         ),
@@ -94,7 +90,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                 color: options!.customizationOptions.galleryCustomization.iconsColor,
               ),
             ),
-            onTap: (){
+            onTap: () {
               galleryProvider.submit(context, options);
             },
           )
@@ -103,23 +99,20 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
       ),
       body: SafeArea(
           child: Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.35,
-                child: Consumer<GalleryProvider>(
-                    builder: (ctx, provider, child){
-
-                      return provider.selectedFile != null ?
-                      Container(
-                          height: MediaQuery.of(context).size.height * 0.35,
-                          width: MediaQuery.of(context).size.width,
-                          color: options!.customizationOptions.galleryCustomization.bgColor,
-                          child: Stack(
-                            children: [
-                              provider.selectedFile!.type == AssetType.image
-                                  ? GalleryImagePreview(provider)
-                                  : GalleryVideoPreview(provider, Key(path.basename(provider.selectedFile!.filePath!))),
-                              options!.customizationOptions.galleryCustomization.maxSelectable > 1 ? Positioned(
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height * 0.35,
+            child: Consumer<GalleryProvider>(builder: (ctx, provider, child) {
+              return provider.selectedFile != null
+                  ? Container(
+                      height: MediaQuery.of(context).size.height * 0.35,
+                      width: MediaQuery.of(context).size.width,
+                      color: options!.customizationOptions.galleryCustomization.bgColor,
+                      child: Stack(
+                        children: [
+                          provider.selectedFile!.type == AssetType.image ? GalleryImagePreview(provider) : GalleryVideoPreview(provider, Key(path.basename(provider.selectedFile!.filePath!))),
+                          options!.customizationOptions.galleryCustomization.maxSelectable > 1
+                              ? Positioned(
                                   right: 20,
                                   bottom: provider.selectedFile!.type == AssetType.video ? 50 : 5,
                                   child: GestureDetector(
@@ -136,49 +129,41 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                                         size: 24,
                                       ),
                                     ),
-                                    onTap: (){
+                                    onTap: () {
                                       provider.multiSelect = !provider.multiSelect;
                                       provider.toggleCheckState(provider.selectedFile);
                                     },
-                                  )
-                              ) : Container()
-                            ],
-                          )
-                      ) : Container();
+                                  ),
+                                )
+                              : Container()
+                        ],
+                      ),
+                    )
+                  : Container();
+            }),
+          ),
+          Divider(),
+          Consumer<GalleryProvider>(builder: (ctx, provider, child) {
+            return provider.selectedFolder != null && provider.selectedFolder!.files!.length > 0
+                ? Container(
+                    color: options!.customizationOptions.galleryCustomization.bgColor,
+                    height: MediaQuery.of(context).size.height * 0.42,
+                    child: GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, crossAxisSpacing: 4, mainAxisSpacing: 4),
+                        itemBuilder: (_, i) {
+                          var file = provider.selectedFolder!.files![i];
 
-                    }
-                ),
-              ),
-              Divider(),
-              Consumer<GalleryProvider>(
-                  builder: (ctx, provider, child){
-
-                    return provider.selectedFolder != null && provider.selectedFolder!.files!.length > 0
-                        ? Container(
-                            color: options!.customizationOptions.galleryCustomization.bgColor,
-                            height: MediaQuery.of(context).size.height * 0.42,
-                            child: GridView.builder(
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 4, crossAxisSpacing: 4, mainAxisSpacing: 4
-                                ),
-                                itemBuilder: (_, i) {
-                                  var file = provider.selectedFolder!.files![i];
-
-                                  return GalleryItem(
-                                    file: file,
-                                    provider: provider,
-                                  );
-
-                                },
-                                itemCount: provider.selectedFolder!.files!.length
-                            ),
-                          ) : Container();
-
-                  }
-              ),
-            ],
-          )
-      ),
+                          return GalleryItem(
+                            file: file,
+                            provider: provider,
+                          );
+                        },
+                        itemCount: provider.selectedFolder!.files!.length),
+                  )
+                : Container();
+          }),
+        ],
+      )),
     );
   }
 }
@@ -208,7 +193,6 @@ class GalleryVideoPreview extends StatefulWidget {
 }
 
 class _GalleryVideoPreviewState extends State<GalleryVideoPreview> {
-
   Future<bool>? _init;
   late ChewieController _chewieController;
   late VideoPlayerController _videoPlayerController;
@@ -245,33 +229,24 @@ class _GalleryVideoPreviewState extends State<GalleryVideoPreview> {
 
   @override
   Widget build(BuildContext context) {
-
     return FutureBuilder<bool>(
       future: _init,
-      builder: (ctx, snp){
-
-        if (!snp.hasData) return Center(
-            child: CircularProgressIndicator(
-                backgroundColor: options!.customizationOptions.accentColor
-            )
-        );
+      builder: (ctx, snp) {
+        if (!snp.hasData) return Center(child: CircularProgressIndicator(backgroundColor: options!.customizationOptions.accentColor));
 
         return VisibilityDetector(
-            key: widget.key,
-            onVisibilityChanged: (VisibilityInfo info) {
-              if(info.visibleFraction == 0)
-                _chewieController.pause();
-              else
-                _chewieController.play();
-            },
-            child: Chewie(controller: _chewieController)
+          key: widget.key,
+          onVisibilityChanged: (VisibilityInfo info) {
+            if (info.visibleFraction == 0)
+              _chewieController.pause();
+            else
+              _chewieController.play();
+          },
+          child: Chewie(controller: _chewieController),
         );
-
-      }
+      },
     );
-
   }
-
 }
 
 class GalleryItem extends StatefulWidget {
@@ -284,8 +259,7 @@ class GalleryItem extends StatefulWidget {
   _GalleryItemState createState() => _GalleryItemState();
 }
 
-class _GalleryItemState extends State<GalleryItem> with AutomaticKeepAliveClientMixin{
-
+class _GalleryItemState extends State<GalleryItem> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
@@ -303,63 +277,67 @@ class _GalleryItemState extends State<GalleryItem> with AutomaticKeepAliveClient
   Widget build(BuildContext context) {
     super.build(context);
 
-    return widget.file != null ? Stack(
-      fit: StackFit.expand,
-      children: [
-        GestureDetector(
-          child: Image.file(
-            File(widget.file!.thumbPath!),
-            fit: BoxFit.cover,
-          ),
-          onTap: () {
-            widget.provider!.selectedFile = widget.file;
-            if (widget.provider!.multiSelect) widget.provider!.toggleCheckState(widget.file);
-          },
-          onLongPress: (){
-
-            if (options!.customizationOptions.galleryCustomization.maxSelectable == 1) return;
-
-            widget.provider!.multiSelect = !widget.provider!.multiSelect;
-            widget.provider!.toggleCheckState(widget.file);
-            widget.provider!.selectedFile = widget.file;
-
-          },
-        ),
-        widget.provider!.multiSelect ? Positioned(
-            top: 5,
-            right: 5,
-            child: GestureDetector(
-              child: Container(
-                width: 24,
-                height: 24,
-                padding: EdgeInsets.only(top: 2),
-                decoration: new BoxDecoration(
-                    color: widget.provider!.getCheckState(widget.file) ? options!.customizationOptions.accentColor : Colors.white70,
-                    shape: BoxShape.circle,
-                    border: Border.all(width: 1.5, color: options!.customizationOptions.galleryCustomization.bgColor)
+    return widget.file != null
+        ? Stack(
+            fit: StackFit.expand,
+            children: [
+              GestureDetector(
+                child: Image.file(
+                  File(widget.file!.thumbPath!),
+                  fit: BoxFit.cover,
                 ),
-                child: widget.provider!.getCheckState(widget.file)
-                    ? Text(widget.provider!.getCheckNumber(widget.file).toString(),
-                    style: TextStyle(
-                        color: Colors.white
-                    ),
-                    textAlign: TextAlign.center
-                ) : Container(),
+                onTap: () {
+                  widget.provider!.selectedFile = widget.file;
+                  if (widget.provider!.multiSelect) widget.provider!.toggleCheckState(widget.file);
+                },
+                onLongPress: () {
+                  if (options!.customizationOptions.galleryCustomization.maxSelectable == 1) return;
+
+                  widget.provider!.multiSelect = !widget.provider!.multiSelect;
+                  widget.provider!.toggleCheckState(widget.file);
+                  widget.provider!.selectedFile = widget.file;
+                },
               ),
-              onTap: (){
-
-                widget.provider!.toggleCheckState(widget.file);
-                widget.provider!.selectedFile = widget.file;
-
-              },
-            )
-        ) : Container(),
-        widget.file!.duration != null && widget.file!.type == AssetType.video ? Positioned(
-            right: 5,
-            bottom: 5,
-            child: Text(StoryUtils.printDuration(widget.file!.duration!), style: TextStyle(color: Colors.white),)
-        ) : Container()
-      ],
-    ) : Container();
+              widget.provider!.multiSelect
+                  ? Positioned(
+                      top: 5,
+                      right: 5,
+                      child: GestureDetector(
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          padding: EdgeInsets.only(top: 2),
+                          decoration: new BoxDecoration(
+                              color: widget.provider!.getCheckState(widget.file) ? options!.customizationOptions.accentColor : Colors.white70,
+                              shape: BoxShape.circle,
+                              border: Border.all(width: 1.5, color: options!.customizationOptions.galleryCustomization.bgColor)),
+                          child: widget.provider!.getCheckState(widget.file)
+                              ? Text(
+                                  widget.provider!.getCheckNumber(widget.file).toString(),
+                                  style: TextStyle(color: Colors.white),
+                                  textAlign: TextAlign.center,
+                                )
+                              : Container(),
+                        ),
+                        onTap: () {
+                          widget.provider!.toggleCheckState(widget.file);
+                          widget.provider!.selectedFile = widget.file;
+                        },
+                      ),
+                    )
+                  : Container(),
+              widget.file!.duration != null && widget.file!.type == AssetType.video
+                  ? Positioned(
+                      right: 5,
+                      bottom: 5,
+                      child: Text(
+                        StoryUtils.printDuration(widget.file!.duration!),
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    )
+                  : Container()
+            ],
+          )
+        : Container();
   }
 }

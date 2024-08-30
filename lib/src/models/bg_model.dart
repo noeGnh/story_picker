@@ -5,5 +5,9 @@ class BgModel {
   Color? hintColor;
   Color? textColor;
 
-  BgModel({this.linearGradient, this.hintColor, this.textColor});
+  BgModel({
+    this.linearGradient,
+    this.hintColor,
+    this.textColor,
+  });
 }

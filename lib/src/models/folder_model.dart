@@ -7,5 +7,11 @@ class FolderModel {
   int? type;
   int? count;
 
-  FolderModel({this.files, this.name, this.id, this.type, this.count});
+  FolderModel({
+    this.files,
+    this.name,
+    this.id,
+    this.type,
+    this.count,
+  });
 }

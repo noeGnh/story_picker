@@ -11,13 +11,12 @@ import 'package:story_picker/src/utils/utils.dart';
 import 'package:story_picker/src/widgets/preview/image_preview.dart';
 import 'package:story_picker/src/widgets/preview/video_preview.dart';
 
-class TextProvider extends ChangeNotifier{
-
+class TextProvider extends ChangeNotifier {
   TextEditingController? textEditingController;
   int? textFontIndex, textAlignIndex, textBgIndex;
   KeyboardVisibilityController? keyboardVisibilityController;
 
-  init(){
+  init() {
     textBgIndex = 0;
     textFontIndex = 0;
     textAlignIndex = 0;
@@ -25,30 +24,30 @@ class TextProvider extends ChangeNotifier{
     keyboardVisibilityController = KeyboardVisibilityController();
   }
 
-  switchTextFont(){
+  switchTextFont() {
     if (textFontIndex! + 1 >= StoryConstants.fonts.length) {
       textFontIndex = 0;
-    }else{
+    } else {
       textFontIndex = textFontIndex! + 1;
     }
 
     notifyListeners();
   }
 
-  switchTextAlign(){
+  switchTextAlign() {
     if (textAlignIndex! + 1 >= StoryConstants.textAlignments.length) {
       textAlignIndex = 0;
-    }else{
+    } else {
       textAlignIndex = textAlignIndex! + 1;
     }
 
     notifyListeners();
   }
 
-  switchTextBackground(){
+  switchTextBackground() {
     if (textBgIndex! + 1 >= StoryConstants.textBackgrounds.length) {
       textBgIndex = 0;
-    }else{
+    } else {
       textBgIndex = textBgIndex! + 1;
     }
 
@@ -56,93 +55,82 @@ class TextProvider extends ChangeNotifier{
   }
 
   openSettingsScreen(BuildContext context, dynamic target) async {
-
     await Navigator.of(context).push(
-        PageTransition(
-            child: target,
-            type: PageTransitionType.leftToRight
-        )
+      PageTransition(
+        child: target,
+        type: PageTransitionType.leftToRight,
+      ),
     );
-
   }
 
   openGalleryScreen(BuildContext context, Options? options) async {
-
     const imgExtensions = ['jpg', 'png', 'jpeg', 'gif', 'webp'];
     const vidExtensions = ['mp4', 'mkv', 'mov', 'wmv', 'flv', 'avi', 'webm'];
 
-    FilePickerResult? pickedResult = await FilePicker.platform.pickFiles(
-        type: FileType.media
-    );
+    FilePickerResult? pickedResult = await FilePicker.platform.pickFiles(type: FileType.media);
 
     if (pickedResult != null) {
-
       StoryPickerResult? result;
 
-      if (imgExtensions.contains( extension(pickedResult.files.single.path!).substring(1).toLowerCase() )){
-
+      if (imgExtensions.contains(extension(pickedResult.files.single.path!).substring(1).toLowerCase())) {
         result = await Navigator.of(context).push(
-            PageTransition(
-                child: ImagePreview(
-                    files: [FileModel(
-                        filePath: pickedResult.files.single.path!,
-                        relativePath: pickedResult.files.single.path!,
-                        thumbPath: pickedResult.files.single.path!,
-                        title: basename(pickedResult.files.single.path!)
-                    )],
-                    imagePreviewOptions: options,
-                    showAddButton: options!.customizationOptions.galleryCustomization.maxSelectable > 1
+          PageTransition(
+            child: ImagePreview(
+              files: [
+                FileModel(
+                  filePath: pickedResult.files.single.path!,
+                  relativePath: pickedResult.files.single.path!,
+                  thumbPath: pickedResult.files.single.path!,
+                  title: basename(pickedResult.files.single.path!),
                 ),
-                type: PageTransitionType.bottomToTop
-            )
+              ],
+              imagePreviewOptions: options,
+              showAddButton: options!.customizationOptions.galleryCustomization.maxSelectable > 1,
+            ),
+            type: PageTransitionType.bottomToTop,
+          ),
         );
-
-      } else if (vidExtensions.contains( extension(pickedResult.files.single.path!).substring(1).toLowerCase() )){
-
+      } else if (vidExtensions.contains(extension(pickedResult.files.single.path!).substring(1).toLowerCase())) {
         result = await Navigator.of(context).push(
-            PageTransition(
-                child: VideoPreview(
-                  files: [FileModel(
-                      filePath: pickedResult.files.single.path!,
-                      relativePath: pickedResult.files.single.path!,
-                      thumbPath: pickedResult.files.single.path!,
-                      title: basename(pickedResult.files.single.path!)
-                  )],
-                  imagePreviewOptions: options,
+          PageTransition(
+            child: VideoPreview(
+              files: [
+                FileModel(
+                  filePath: pickedResult.files.single.path!,
+                  relativePath: pickedResult.files.single.path!,
+                  thumbPath: pickedResult.files.single.path!,
+                  title: basename(pickedResult.files.single.path!),
                 ),
-                type: PageTransitionType.bottomToTop
-            )
+              ],
+              imagePreviewOptions: options,
+            ),
+            type: PageTransitionType.bottomToTop,
+          ),
         );
-
       }
 
       if (result != null) Navigator.pop(context, result);
-
     }
-
   }
 
   submit(BuildContext context) {
-
     if (textEditingController!.text.isEmpty) return;
 
     Navigator.pop(
-        context,
-        StoryPickerResult(
-            storyText: StoryText(
-              font: StoryConstants.fonts[textFontIndex!],
-              text: textEditingController!.text,
-              align: StoryConstants.textAlignments[textAlignIndex!],
-              colorHex: StoryConstants.textBackgrounds[textBgIndex!].textColor!.toHex(),
-              linearGradient: StoryConstants.textBackgrounds[textBgIndex!].linearGradient,
-              fontIndex: textFontIndex,
-              alignIndex: textAlignIndex,
-              linearGradientIndex: textAlignIndex
-            ),
-            resultType: ResultType.TEXT
-        )
+      context,
+      StoryPickerResult(
+        storyText: StoryText(
+          font: StoryConstants.fonts[textFontIndex!],
+          text: textEditingController!.text,
+          align: StoryConstants.textAlignments[textAlignIndex!],
+          colorHex: StoryConstants.textBackgrounds[textBgIndex!].textColor!.toHex(),
+          linearGradient: StoryConstants.textBackgrounds[textBgIndex!].linearGradient,
+          fontIndex: textFontIndex,
+          alignIndex: textAlignIndex,
+          linearGradientIndex: textAlignIndex,
+        ),
+        resultType: ResultType.TEXT,
+      ),
     );
-
   }
-
 }

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-abstract class StoryUtils{
-
+abstract class StoryUtils {
   static String printDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
 
@@ -10,30 +9,24 @@ abstract class StoryUtils{
     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
 
-    return duration.inHours > 0
-        ? "$twoDigitHours:$twoDigitMinutes:$twoDigitSeconds"
-        : "$twoDigitMinutes:$twoDigitSeconds";
+    return duration.inHours > 0 ? "$twoDigitHours:$twoDigitMinutes:$twoDigitSeconds" : "$twoDigitMinutes:$twoDigitSeconds";
   }
 
-  static void showToast(String msg){
-
+  static void showToast(String msg) {
     Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.black87,
-        textColor: Colors.white,
-        fontSize: 16.0,
-        webShowClose: true
+      msg: msg,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.black87,
+      textColor: Colors.white,
+      fontSize: 16.0,
+      webShowClose: true,
     );
-
   }
-
 }
 
 extension HexColor on Color {
-
   /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
   static Color fromHex(String hexString) {
     final buffer = StringBuffer();
@@ -48,5 +41,4 @@ extension HexColor on Color {
       '${red.toRadixString(16).padLeft(2, '0')}'
       '${green.toRadixString(16).padLeft(2, '0')}'
       '${blue.toRadixString(16).padLeft(2, '0')}';
-
 }

@@ -76,25 +76,26 @@ class _CameraState extends State<Camera> {
           Positioned(
             bottom: 10,
             child: Container(
-                alignment: Alignment.center,
-                width: size.width,
-                child: Column(
-                  children: [
-                    Center(
-                      child: CaptureControl(cameraProvider),
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        GalleryIconWidget(),
-                        TextIconWidget(),
-                        CameraToggleIconWidget(mounted),
-                      ],
-                    ),
-                  ],
-                )),
+              alignment: Alignment.center,
+              width: size.width,
+              child: Column(
+                children: [
+                  Center(
+                    child: CaptureControl(cameraProvider),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      GalleryIconWidget(),
+                      TextIconWidget(),
+                      CameraToggleIconWidget(mounted),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           )
         ],
       );
@@ -225,7 +226,11 @@ class SettingsIconWidget extends StatelessWidget {
     return GestureDetector(
       child: Padding(
         padding: EdgeInsets.only(left: 21),
-        child: Icon(Icons.settings, color: options!.customizationOptions.cameraCustomization.iconsColor, size: 32),
+        child: Icon(
+          Icons.settings,
+          color: options!.customizationOptions.cameraCustomization.iconsColor,
+          size: 32,
+        ),
       ),
       onTap: () {
         cameraProvider.openSettingsScreen(context, options!.settingsTarget);

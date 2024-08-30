@@ -15,8 +15,8 @@ dependencies:
   story_picker:
     path: ../
 
-  cupertino_icons: ^1.0.6
-  video_player: ^2.8.4
+  cupertino_icons: ^1.0.8
+  video_player: ^2.9.1
 
 dev_dependencies:
   flutter_test:
@@ -29,5 +29,4 @@ dependency_overrides:
       ref: 734a2d5
 
 flutter:
-
   uses-material-design: true
