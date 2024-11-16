@@ -4,11 +4,13 @@ class Options {
   dynamic settingsTarget;
   Translations translations;
   CustomizationOptions customizationOptions;
+  bool disableTextStories;
 
   Options({
     this.settingsTarget,
     Translations? translations,
     CustomizationOptions? customizationOptions,
+    this.disableTextStories = false,
   })  : this.translations = translations ?? Translations(),
         this.customizationOptions = customizationOptions ?? CustomizationOptions();
 }

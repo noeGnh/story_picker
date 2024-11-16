@@ -89,7 +89,7 @@ class _CameraState extends State<Camera> {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       GalleryIconWidget(),
-                      TextIconWidget(),
+                      options!.disableTextStories ? Container() : TextIconWidget(),
                       CameraToggleIconWidget(mounted),
                     ],
                   ),
