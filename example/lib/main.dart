@@ -10,25 +10,19 @@ void main() {
 }
 
 class App extends StatelessWidget {
+  const App({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Example",
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Example"),
-        ),
-        body: Content(),
-        backgroundColor: Colors.blue,
-      ),
-    );
+    return MaterialApp(title: "Example", debugShowCheckedModeBanner: false, home: Scaffold(appBar: AppBar(title: Text("Example")), body: Content(), backgroundColor: Colors.blue));
   }
 }
 
 class Content extends StatefulWidget {
+  const Content({super.key});
+
   @override
-  _ContentState createState() => _ContentState();
+  State<Content> createState() => _ContentState();
 }
 
 class _ContentState extends State<Content> {
@@ -43,18 +37,14 @@ class _ContentState extends State<Content> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
+          SizedBox(
             width: 300,
             height: 300,
             child: mediaPath != null && mediaType != null ? (mediaType == ResultType.IMAGE ? Image.file(File(mediaPath!)) : VideoPlayerWidget(mediaPath!)) : Container(),
           ),
           ElevatedButton(
             onPressed: () async {
-              var result = await StoryPicker.pick(
-                context,
-                transitionType: PageTransitionType.leftToRight,
-                options: Options(settingsTarget: Settings()),
-              );
+              var result = await StoryPicker.pick(context, transitionType: PageTransitionType.leftToRight, options: Options(settingsTarget: Settings()));
               if (result != null) {
                 mediaPath = result.pickedFiles![0].path;
                 mediaType = result.resultType;
@@ -62,7 +52,7 @@ class _ContentState extends State<Content> {
               setState(() {});
             },
             child: Text('Pick It'),
-          )
+          ),
         ],
       ),
     );
@@ -72,10 +62,10 @@ class _ContentState extends State<Content> {
 class VideoPlayerWidget extends StatefulWidget {
   final String path;
 
-  const VideoPlayerWidget(this.path, {Key? key}) : super(key: key);
+  const VideoPlayerWidget(this.path, {super.key});
 
   @override
-  _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
+  State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
@@ -84,9 +74,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   void initState() {
-    _controller = VideoPlayerController.file(
-      File(widget.path),
-    );
+    _controller = VideoPlayerController.file(File(widget.path));
 
     _initializeVideoPlayerFuture = _controller.initialize();
 
@@ -102,14 +90,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       future: _initializeVideoPlayerFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            child: VideoPlayer(_controller),
-          );
+          return AspectRatio(aspectRatio: _controller.value.aspectRatio, child: VideoPlayer(_controller));
         } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
       },
     );

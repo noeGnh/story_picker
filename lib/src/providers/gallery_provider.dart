@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:get_thumbnail_video/index.dart';
+import 'package:get_thumbnail_video/video_thumbnail.dart';
 import 'package:logger/logger.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path/path.dart';
@@ -16,7 +18,6 @@ import 'package:story_picker/src/models/result.dart';
 import 'package:story_picker/src/utils/utils.dart';
 import 'package:story_picker/src/widgets/preview/image_preview.dart';
 import 'package:story_picker/src/widgets/preview/video_preview.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 class GalleryProvider extends ChangeNotifier {
   final Logger logger = Logger();
