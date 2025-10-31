@@ -73,7 +73,6 @@ class ImagePreviewProvider extends ChangeNotifier {
         AndroidUiSettings(
           toolbarTitle: '',
           toolbarColor: options.customizationOptions.appBarColor,
-          statusBarColor: options.customizationOptions.appBarColor,
           backgroundColor: options.customizationOptions.appBarColor,
           toolbarWidgetColor: options.customizationOptions.previewScreenCustomization.iconsColor,
           activeControlsWidgetColor: options.customizationOptions.previewScreenCustomization.iconsColor,

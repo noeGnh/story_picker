@@ -1,7 +1,7 @@
 name: story_picker
 description: Story Picker.
-version: 0.0.8+16
-homepage: https://github.com/mstrkn/StoryPicker.git
+version: 0.0.8+17
+homepage: https://github.com/noeGnh/StoryPicker.git
 publish_to: 'none'
 
 environment:
@@ -14,24 +14,24 @@ dependencies:
   flutter_keyboard_visibility: ^6.0.0
   flutter_image_compress: ^2.4.0
   auto_size_text_field: ^2.2.4
-  permission_handler: ^12.0.0
+  permission_handler: ^12.0.1
   visibility_detector: ^0.4.0+2
   get_thumbnail_video: ^0.7.3
   just_the_tooltip: ^0.0.12
   page_transition: ^2.2.1
   path_provider: ^2.1.5
   video_trimmer: ^5.0.0
-  photo_manager: ^3.6.4
-  image_cropper: ^9.1.0
-  video_player: ^2.9.5
-  fluttertoast: ^8.2.12
-  file_picker: ^10.1.7
+  photo_manager: ^3.7.1
+  image_cropper: ^11.0.0
+  video_player: ^2.10.0
+  fluttertoast: ^9.0.0
+  file_picker: ^10.3.3
   photo_view: ^0.15.0
   platform: ^3.1.6
   provider: ^6.1.5
-  camera: ^0.11.1
-  chewie: ^1.11.3
-  logger: ^2.5.0
+  camera: ^0.11.3
+  chewie: ^1.13.0
+  logger: ^2.6.2
   path: ^1.9.1
 
   photofilters:
