@@ -48,10 +48,11 @@ class StoryPickerOptions {
 class StoryPickerTheme {
   const StoryPickerTheme({this.accentColor = Colors.black, this.overlayIconColor = Colors.white, this.recordingColor = Colors.red});
 
-  /// Progress indicators.
+  /// Progress indicator inside the capture button.
   final Color accentColor;
 
-  /// Icons drawn over the camera preview and the text story background.
+  /// Icons and progress indicators drawn over the camera preview, the text
+  /// story background and the dark editor screens.
   final Color overlayIconColor;
 
   /// Video recording progress bar.

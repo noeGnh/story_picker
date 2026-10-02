@@ -136,6 +136,22 @@ void main() {
     expect(result.background, same(StoryBackground.defaults[1]));
   });
 
+  testWidgets('long text is shrunk to fit', (tester) async {
+    await _open(tester);
+    await tester.tap(find.byIcon(Icons.text_fields));
+    await tester.pumpAndSettle();
+    double fontSize() => tester.widget<EditableText>(find.byType(EditableText)).style.fontSize!;
+
+    await tester.enterText(find.byType(EditableText), 'Short');
+    await tester.pump();
+    expect(fontSize(), 30);
+
+    await tester.enterText(find.byType(EditableText), 'A much longer story text ' * 12);
+    await tester.pump();
+    expect(fontSize(), lessThan(30));
+    expect(fontSize(), greaterThanOrEqualTo(16));
+  });
+
   testWidgets('empty text is not submitted', (tester) async {
     final host = await _open(tester);
 

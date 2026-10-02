@@ -1,3 +1,11 @@
+## 1.0.0-dev.3
+
+- New `StoryEditorI18n.fr`: French translations of every editor tool the picker shows, for `ProImageEditorConfigs(i18n: ...)`.
+- The video editor shows the render progress as a percentage. A loading dialog set in `editorConfigs.dialogConfigs` still takes precedence.
+- The text screen no longer depends on auto_size_text_field: the text shrinks from 30 to 16 to fit above the keyboard, and the character counter is hidden.
+- `StoryPicker.localizationsDelegates` is now `GlobalMaterialLocalizations.delegates` from `material_ui`: the `package:flutter` Material and Cupertino delegates are no longer needed.
+- Progress indicators on the dark editor screens use `StoryPickerTheme.overlayIconColor`, so they stay visible with the default black `accentColor`.
+
 ## 1.0.0-dev.2
 
 - Photos and videos open in [pro_image_editor](https://pub.dev/packages/pro_image_editor): text, drawing, emojis, filters, tune, blur, crop/rotate, and for videos trimming (limited to `maxVideoDuration`) with a final render through [pro_video_editor](https://pub.dev/packages/pro_video_editor). Replaces photofilters, image_cropper and video_trimmer.

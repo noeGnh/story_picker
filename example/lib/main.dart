@@ -43,16 +43,7 @@ class _ContentState extends State<Content> {
         textFonts: const ['Montserrat', 'OpenSans'],
         settingsBuilder: (_) => const Settings(),
         // The photo and video editors are configured with pro_image_editor types.
-        editorConfigs: const ProImageEditorConfigs(
-          i18n: I18n(
-            cancel: 'Annuler',
-            undo: 'Annuler',
-            redo: 'Rétablir',
-            done: 'Terminé',
-            remove: 'Supprimer',
-            doneLoadingMsg: 'Application des modifications',
-          ),
-        ),
+        editorConfigs: const ProImageEditorConfigs(i18n: StoryEditorI18n.fr),
       ),
     );
     if (result != null) setState(() => _result = result);

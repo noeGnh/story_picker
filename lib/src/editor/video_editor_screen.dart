@@ -213,6 +213,13 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
         maxTrimDuration: options.maxVideoDuration,
         playTimeSmoothingDuration: const Duration(milliseconds: 600),
       ),
+      dialogConfigs: base.dialogConfigs.widgets.loadingDialog != null
+          ? null
+          : base.dialogConfigs.copyWith(
+              widgets: base.dialogConfigs.widgets.copyWith(
+                loadingDialog: (message, _) => _RenderProgressDialog(taskId: _taskId, message: message, color: options.theme.overlayIconColor),
+              ),
+            ),
     );
   }
 
@@ -226,7 +233,7 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
         backgroundColor: Colors.black,
         appBar: AppBar(backgroundColor: Colors.black, foregroundColor: Colors.white),
         body: Center(
-          child: _failed ? const Icon(Icons.error_outline, color: Colors.white) : CircularProgressIndicator(color: options.theme.accentColor),
+          child: _failed ? const Icon(Icons.error_outline, color: Colors.white) : CircularProgressIndicator(color: options.theme.overlayIconColor),
         ),
       );
     }
@@ -251,6 +258,60 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Loading dialog of the video editor, with the render progress.
+class _RenderProgressDialog extends StatelessWidget {
+  const _RenderProgressDialog({required this.taskId, required this.message, required this.color});
+
+  final String taskId;
+  final String message;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        const ModalBarrier(color: Colors.black54, dismissible: false),
+        // Shown in an overlay, outside the editor's text style.
+        Material(
+          type: MaterialType.transparency,
+          child: Center(
+            child: StreamBuilder<ProgressModel>(
+              stream: ProVideoEditor.instance.progressStreamById(taskId),
+              builder: (context, snapshot) {
+                // No value until the render starts: the editor first captures its layers.
+                final progress = snapshot.data?.progress;
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox.square(
+                      dimension: 64,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          CircularProgressIndicator(value: progress, color: color, backgroundColor: Colors.white24),
+                          if (progress != null)
+                            Center(
+                              child: Text(
+                                '${(progress * 100).round()} %',
+                                style: const TextStyle(color: Colors.white, fontSize: 14, fontFeatures: [FontFeature.tabularFigures()]),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(message, style: const TextStyle(color: Colors.white, fontSize: 16)),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
