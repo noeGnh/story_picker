@@ -65,8 +65,9 @@ void main() {
     await tester.tap(find.byIcon(Icons.flash_auto));
     await tester.pump();
     expect(find.byIcon(Icons.flash_off), findsOneWidget);
-    // The first call applies the initial mode when the camera opens.
-    expect(camera.flashModes, [FlashMode.off, FlashMode.torch, FlashMode.auto, FlashMode.off]);
+    // Opening the camera does not set the default mode: on Android, that
+    // blacks out the preview of cameras without a flash.
+    expect(camera.flashModes, [FlashMode.torch, FlashMode.auto, FlashMode.off]);
   });
 
   testWidgets('switch button only appears with several cameras', (tester) async {
@@ -85,6 +86,19 @@ void main() {
 
     expect(camera.created, ['back', 'front', 'back']);
     expect(camera.disposed, [0, 1]);
+  });
+
+  testWidgets('the flash mode is applied again to the next camera', (tester) async {
+    useCamera(FakeCameraPlatform(cameras: [backCamera, frontCamera]));
+    await openPicker(tester);
+
+    await tester.tap(find.byIcon(Icons.flash_off));
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.flip_camera_android));
+    await tester.pumpAndSettle();
+
+    expect(camera.flashModes, [FlashMode.torch, FlashMode.torch]);
+    expect(find.byIcon(Icons.flash_on), findsOneWidget);
   });
 
   testWidgets('releases the camera when the app goes to the background', (tester) async {

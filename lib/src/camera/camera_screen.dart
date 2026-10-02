@@ -98,7 +98,9 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     final controller = CameraController(description, ResolutionPreset.high);
     try {
       await controller.initialize();
-      await controller.setFlashMode(_flashMode).catchError((_) {});
+      // Off is the default. Setting it anyway blacks out the preview of
+      // cameras without a flash (Android CameraX).
+      if (_flashMode != FlashMode.off) await controller.setFlashMode(_flashMode).catchError((_) {});
     } on CameraException catch (e) {
       debugPrint('story_picker: cannot open camera: ${e.code} ${e.description}');
       await controller.dispose();
