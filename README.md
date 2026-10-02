@@ -1,6 +1,6 @@
 # story_picker
 
-[![CI](https://github.com/noeGnh/story_picker/actions/workflows/ci.yml/badge.svg)](https://github.com/noeGnh/story_picker/actions/workflows/ci.yml)
+[![pub package](https://img.shields.io/pub/v/story_picker.svg)](https://pub.dev/packages/story_picker) [![CI](https://github.com/noeGnh/story_picker/actions/workflows/ci.yml/badge.svg)](https://github.com/noeGnh/story_picker/actions/workflows/ci.yml)
 
 A story-style capture flow for Flutter apps: full-screen camera (tap for a photo, press and hold for a video), text stories on a colored background and the system media picker. Photos and videos then open in an editor (text, drawing, emojis, filters, crop, trim) powered by [pro_image_editor](https://pub.dev/packages/pro_image_editor) and [pro_video_editor](https://pub.dev/packages/pro_video_editor), and the result goes back to your app.
 
@@ -8,14 +8,8 @@ Requires Flutter 3.47 or later. Android `minSdk` 24.
 
 ## Install
 
-The package is not published on pub.dev. Add it from Git:
-
-```yaml
-dependencies:
-  story_picker:
-    git:
-      url: https://github.com/noeGnh/story_picker.git
-      ref: master
+```sh
+flutter pub add story_picker
 ```
 
 ### Android
