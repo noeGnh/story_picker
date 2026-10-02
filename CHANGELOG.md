@@ -1,3 +1,13 @@
+## 1.0.0
+
+First stable release of the rework, which breaks the 0.0.x API: see "Migrating from 0.0.x" in the README. It brings together the 1.0.0-dev versions below:
+
+- A focused capture flow: camera (tap for a photo, press and hold for a video), text stories and the system media picker, returning a sealed `StoryPickerResult`.
+- Photo and video editing through pro_image_editor and pro_video_editor, with built-in French translations (`StoryPickerTranslations.fr`, `StoryEditorI18n.fr`).
+- Built on `package:material_ui` (Flutter 3.47+); host apps add `StoryPicker.localizationsDelegates`.
+- Widget tests covering every screen, and CI on GitHub Actions.
+- MIT license.
+
 ## 1.0.0-dev.3
 
 - New `StoryEditorI18n.fr`: French translations of every editor tool the picker shows, for `ProImageEditorConfigs(i18n: ...)`.

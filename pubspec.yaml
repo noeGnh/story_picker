@@ -1,8 +1,19 @@
 name: story_picker
-description: Story-style capture flow for Flutter - camera, text stories, system media picker and preview.
-version: 1.0.0-dev.3
-homepage: https://github.com/noeGnh/story_picker
-publish_to: 'none'
+description: Story-style capture flow for Flutter apps - full-screen camera, text stories, media picker, and photo and video editing.
+version: 1.0.0
+repository: https://github.com/noeGnh/story_picker
+issue_tracker: https://github.com/noeGnh/story_picker/issues
+topics:
+  - camera
+  - stories
+  - image-editor
+  - video-editor
+  - media-picker
+
+# The camera and the video editor are mobile only.
+platforms:
+  android:
+  ios:
 
 environment:
   sdk: ^3.13.0
