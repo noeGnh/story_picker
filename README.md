@@ -6,6 +6,14 @@ A story-style capture flow for Flutter apps: full-screen camera (tap for a photo
 
 Requires Flutter 3.47 or later. Android `minSdk` 24.
 
+## Preview
+
+| Photo and editor | Text story | Picked video and trimming |
+| :---: | :---: | :---: |
+| <img src="https://raw.githubusercontent.com/noeGnh/story_picker/master/doc/preview/photo.gif" alt="Taking a photo, adding a text in the editor and getting the result back" width="250"> | <img src="https://raw.githubusercontent.com/noeGnh/story_picker/master/doc/preview/text-story.gif" alt="Writing a text story, changing its background and font" width="250"> | <img src="https://raw.githubusercontent.com/noeGnh/story_picker/master/doc/preview/video.gif" alt="Picking a video from the device and trimming it in the video editor" width="250"> |
+
+Recorded on the Android emulator with the [example app](example), in French (`StoryPickerTranslations.fr`, `StoryEditorI18n.fr`).
+
 ## Install
 
 ```sh
