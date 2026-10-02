@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:example/settings.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:pro_image_editor/pro_image_editor.dart';
 import 'package:story_picker/story_picker.dart';
 import 'package:video_player/video_player.dart';
 
@@ -17,6 +18,8 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Example',
       debugShowCheckedModeBanner: false,
+      // Required by the picker and its editors.
+      localizationsDelegates: StoryPicker.localizationsDelegates,
       home: Scaffold(appBar: AppBar(title: const Text('Example')), body: const Content(), backgroundColor: Colors.blue),
     );
   }
@@ -39,6 +42,17 @@ class _ContentState extends State<Content> {
         translations: StoryPickerTranslations.fr,
         textFonts: const ['Montserrat', 'OpenSans'],
         settingsBuilder: (_) => const Settings(),
+        // The photo and video editors are configured with pro_image_editor types.
+        editorConfigs: const ProImageEditorConfigs(
+          i18n: I18n(
+            cancel: 'Annuler',
+            undo: 'Annuler',
+            redo: 'Rétablir',
+            done: 'Terminé',
+            remove: 'Supprimer',
+            doneLoadingMsg: 'Application des modifications',
+          ),
+        ),
       ),
     );
     if (result != null) setState(() => _result = result);

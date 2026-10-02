@@ -37,7 +37,9 @@ dependencies:
   video_player: ^2.14.0
   story_picker:
     path: ../
+  pro_image_editor: ^14.6.1
 
+  material_ui: ^1.5.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

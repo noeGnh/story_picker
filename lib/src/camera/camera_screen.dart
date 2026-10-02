@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../media_picker.dart';
-import '../preview/image_preview_screen.dart';
-import '../result.dart';
+import '../editor/image_editor_screen.dart';
+import '../editor/video_editor_screen.dart';
 import '../scope.dart';
 import '../text/text_screen.dart';
 import '../widgets/overlay_controls.dart';
@@ -153,7 +153,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
       if (mounted) setState(() => _takingPicture = false);
     }
     if (!mounted) return;
-    await pushStoryScreenAndForward(context, ImagePreviewScreen(path: file.path));
+    await pushStoryScreenAndForward(context, ImageEditorScreen(path: file.path));
   }
 
   Future<void> _startRecording() async {
@@ -214,20 +214,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     }
     if (!mounted) return;
 
-    final translations = StoryPickerScope.of(context).translations;
-    final keep = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: Text(translations.recordedVideo),
-        content: Text(translations.whatDoYouWantToDo),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(translations.delete)),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: Text(translations.validate)),
-        ],
-      ),
-    );
-    if (keep == true && mounted) Navigator.of(context).pop(StoryVideoResult(file.path));
+    await pushStoryScreenAndForward(context, VideoEditorScreen(path: file.path));
   }
 
   void _openSettings(WidgetBuilder builder) {
