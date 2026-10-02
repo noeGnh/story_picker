@@ -25,14 +25,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.12.0"
-  auto_size_text_field:
-    dependency: "direct main"
-    description:
-      name: auto_size_text_field
-      sha256: "993622a483d30165c7536e120a145ae9b57c2d6e8a39027b9701c499cd8997a0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -223,7 +215,7 @@ packages:
     source: hosted
     version: "6.0.0"
   flutter_localizations:
-    dependency: "direct main"
+    dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.0"

@@ -1,5 +1,3 @@
-import 'package:auto_size_text_field/auto_size_text_field.dart';
-import 'package:flutter/material.dart' as legacy show InputBorder, InputDecoration, Material, MaterialType;
 import 'package:material_ui/material_ui.dart';
 
 import '../media_picker.dart';
@@ -9,6 +7,12 @@ import '../scope.dart';
 import '../widgets/overlay_controls.dart';
 
 const _alignments = [TextAlign.center, TextAlign.left, TextAlign.right];
+const _maxFontSize = 30.0;
+const _minFontSize = 16.0;
+
+/// Room kept for the capture button and the bottom row when the keyboard is
+/// hidden, on each side of the centered text.
+const _controlsHeight = 150.0;
 
 class TextStoryScreen extends StatefulWidget {
   const TextStoryScreen({super.key});
@@ -24,9 +28,35 @@ class _TextStoryScreenState extends State<TextStoryScreen> {
   int _backgroundIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+    _text.addListener(_onTextChanged);
+  }
+
+  @override
   void dispose() {
     _text.dispose();
     super.dispose();
+  }
+
+  void _onTextChanged() => setState(() {});
+
+  /// Largest font size, in steps of 2, at which [text] fits in [size].
+  double _fitFontSize(String text, TextStyle style, Size size) {
+    final painter = TextPainter(textAlign: _alignments[_alignIndex], textDirection: Directionality.of(context), textScaler: MediaQuery.textScalerOf(context));
+    try {
+      for (var fontSize = _maxFontSize; fontSize > _minFontSize; fontSize -= 2) {
+        painter.text = TextSpan(
+          text: text,
+          style: style.copyWith(fontSize: fontSize),
+        );
+        painter.layout(maxWidth: size.width);
+        if (painter.height <= size.height) return fontSize;
+      }
+      return _minFontSize;
+    } finally {
+      painter.dispose();
+    }
   }
 
   List<StoryBackground> _backgrounds(StoryPickerOptions options) => options.textBackgrounds.isEmpty ? StoryBackground.defaults : options.textBackgrounds;
@@ -50,7 +80,9 @@ class _TextStoryScreenState extends State<TextStoryScreen> {
     final backgrounds = _backgrounds(options);
     final background = backgrounds[_backgroundIndex];
     final fontFamily = options.textFonts.isEmpty ? null : options.textFonts[_fontIndex];
-    final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
+    // Read above the Scaffold, which hides the view insets from its body.
+    final keyboardHeight = MediaQuery.viewInsetsOf(context).bottom;
+    final keyboardVisible = keyboardHeight > 0;
     final settingsBuilder = options.settingsBuilder;
 
     return Scaffold(
@@ -66,23 +98,31 @@ class _TextStoryScreenState extends State<TextStoryScreen> {
                 Container(
                   alignment: keyboardVisible ? Alignment.topCenter : Alignment.center,
                   padding: EdgeInsets.fromLTRB(16, keyboardVisible ? 80 : 0, 16, 0),
-                  // auto_size_text_field still uses package:flutter/material.dart.
-                  child: legacy.Material(
-                    type: legacy.MaterialType.transparency,
-                    child: AutoSizeTextField(
-                      controller: _text,
-                      style: TextStyle(fontSize: 30, fontFamily: fontFamily, color: background.textColor),
-                      textAlign: _alignments[_alignIndex],
-                      minFontSize: 16,
-                      minLines: 1,
-                      maxLines: 16,
-                      maxLength: 700,
-                      decoration: legacy.InputDecoration(
-                        border: legacy.InputBorder.none,
-                        hintText: options.translations.pressToWrite,
-                        hintStyle: TextStyle(fontFamily: fontFamily, color: background.hintColor),
-                      ),
-                    ),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final room = Size(
+                        constraints.maxWidth - 4, // Leaves room for the cursor.
+                        keyboardVisible ? constraints.maxHeight - keyboardHeight - 16 : constraints.maxHeight - 2 * _controlsHeight,
+                      );
+                      // TextField merges the theme's bodyLarge (line height…) into its style.
+                      final style = Theme.of(context).textTheme.bodyLarge!.merge(TextStyle(fontFamily: fontFamily, color: background.textColor));
+                      final hint = options.translations.pressToWrite;
+                      final fontSize = _fitFontSize(_text.text.isEmpty ? hint : _text.text, style, room);
+                      return TextField(
+                        controller: _text,
+                        style: style.copyWith(fontSize: fontSize),
+                        textAlign: _alignments[_alignIndex],
+                        minLines: 1,
+                        maxLines: 16,
+                        maxLength: 700,
+                        buildCounter: (_, {required currentLength, required isFocused, maxLength}) => null,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: hint,
+                          hintStyle: style.copyWith(fontSize: fontSize, color: background.hintColor),
+                        ),
+                      );
+                    },
                   ),
                 ),
                 Padding(

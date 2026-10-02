@@ -33,7 +33,7 @@ Add `NSCameraUsageDescription`, `NSMicrophoneUsageDescription` and `NSPhotoLibra
 
 ### Localizations
 
-Since Flutter 3.47, Material and Cupertino live in `package:material_ui` and `package:cupertino_ui`; the copies still in `package:flutter` have their own localization types. The editors use the new libraries and some dependencies still use the old ones, so the picker needs both. Add its delegates to your app, whichever library it uses:
+Since Flutter 3.47, Material and Cupertino live in `package:material_ui` and `package:cupertino_ui`, with their own localization types that the delegates of `flutter_localizations` do not provide. The picker uses these libraries, so add its delegates to your app, even if it still uses `package:flutter/material.dart`:
 
 ```dart
 MaterialApp(
@@ -75,21 +75,21 @@ StoryPicker.pick(
     settingsBuilder: (context) => const MySettingsScreen(),
     theme: const StoryPickerTheme(accentColor: Colors.deepPurple),
     // pro_image_editor configuration: translations, theme, tools…
-    editorConfigs: const ProImageEditorConfigs(i18n: I18n(done: 'Terminé', cancel: 'Annuler')),
+    editorConfigs: const ProImageEditorConfigs(i18n: StoryEditorI18n.fr),
   ),
 );
 ```
 
 | Option | Default | |
 | --- | --- | --- |
-| `theme` | `StoryPickerTheme()` | Colors of the overlay icons, recording bar and progress indicators. |
+| `theme` | `StoryPickerTheme()` | Colors of the overlay icons and progress indicators, the recording bar and the capture button's progress indicator. |
 | `translations` | English | Strings of the camera and text screens. `StoryPickerTranslations.fr` is built in. |
 | `maxVideoDuration` | 15 s | Longest video the camera records and the video editor lets the user keep. |
 | `enableTextStories` | `true` | Shows the text story button on the camera. |
 | `textFonts` | `[]` | Font families the text screen cycles through. Declare them in your app's `pubspec.yaml`. When empty, the default font is used and the font button is hidden. |
 | `textBackgrounds` | `StoryBackground.defaults` | Gradients the text screen cycles through. |
 | `settingsBuilder` | `null` | Screen opened by the settings button. The button is hidden when null. |
-| `editorConfigs` | `ProImageEditorConfigs()` | Base configuration of the photo and video editors, with [pro_image_editor](https://pub.dev/packages/pro_image_editor) types: `i18n` for translations, theme, tools… The video editor adds its own trim limits and drops the tools videos do not support. |
+| `editorConfigs` | `ProImageEditorConfigs()` | Base configuration of the photo and video editors, with [pro_image_editor](https://pub.dev/packages/pro_image_editor) types: `i18n` for translations (`StoryEditorI18n.fr` is built in), theme, tools… The video editor adds its own trim limits, drops the tools videos do not support and shows the render progress, unless `dialogConfigs` provides a loading dialog. |
 
 ## Migrating from 0.0.x
 
@@ -101,7 +101,7 @@ StoryPicker.pick(
 | `CustomizationOptions` and its 4 sub-classes | `StoryPickerTheme` for the camera and text screens, `editorConfigs` for the editors |
 | `videoDurationLimitInSeconds` (capped at 60) | `maxVideoDuration` (`Duration`, no cap) |
 | `GalleryCustomization.maxSelectable` | Removed: multi-selection never worked with the system picker. |
-| `Translations` | `StoryPickerTranslations` keeps `pressToWrite`, `pressAndHoldToRecord` and adds `cameraUnavailable`, `videoExportFailed`; the editor strings move to `editorConfigs.i18n` |
+| `Translations` | `StoryPickerTranslations` keeps `pressToWrite`, `pressAndHoldToRecord` and adds `cameraUnavailable`, `videoExportFailed`; the editor strings move to `editorConfigs.i18n` (`StoryEditorI18n.fr` for French) |
 | `StoryPickerResult.resultType` + `pickedFiles` / `storyText` | Sealed `StoryImageResult`, `StoryVideoResult`, `StoryTextResult` |
 | `StoryText.colorHex`, `linearGradient`, `fontIndex`, … | `StoryTextResult.background` (`gradient`, `textColor`), `fontFamily`, `textAlign` |
 | Bundled fonts (FreightSans, MADECanvas, ProximaNova, AvenyT, Montserrat, OpenSans) | Removed: pass your own families in `textFonts`. |

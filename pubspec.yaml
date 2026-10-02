@@ -1,6 +1,6 @@
 name: story_picker
 description: Story-style capture flow for Flutter - camera, text stories, system media picker and preview.
-version: 1.0.0-dev.2
+version: 1.0.0-dev.3
 homepage: https://github.com/noeGnh/story_picker
 publish_to: 'none'
 
@@ -11,7 +11,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  auto_size_text_field: ^2.3.0
   file_picker: ^13.1.0
   camera: ^0.12.1
   path: ^1.9.1
@@ -20,8 +19,6 @@ dependencies:
   video_player: ^2.14.0
   path_provider: ^2.1.6
   material_ui: ^1.5.0
-  flutter_localizations:
-    sdk: flutter
   cupertino_ui: ^1.1.1
 
 dev_dependencies:

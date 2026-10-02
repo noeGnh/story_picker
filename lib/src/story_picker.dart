@@ -1,7 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart' as cupertino;
-import 'package:flutter/cupertino.dart' as legacy_cupertino;
-import 'package:flutter/material.dart' as legacy;
-import 'package:flutter_localizations/flutter_localizations.dart' as legacy_l10n;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoLocalizations;
 import 'package:material_ui/material_ui.dart';
 
 import 'camera/camera_screen.dart';
@@ -17,17 +14,10 @@ abstract final class StoryPicker {
   /// ```
   ///
   /// Since Flutter 3.47 Material and Cupertino live in package:material_ui
-  /// and package:cupertino_ui, and the copies still in package:flutter have
-  /// their own localization types. The editors use the new libraries, some
-  /// dependencies still use the old ones, so both sets are needed whichever
-  /// one your app uses.
-  static const localizationsDelegates = <LocalizationsDelegate<dynamic>>[
-    GlobalMaterialLocalizations.delegate,
-    cupertino.GlobalCupertinoLocalizations.delegate,
-    legacy_l10n.GlobalWidgetsLocalizations.delegate,
-    legacy_l10n.GlobalMaterialLocalizations.delegate,
-    legacy_l10n.GlobalCupertinoLocalizations.delegate,
-  ];
+  /// and package:cupertino_ui, with their own localization types: the
+  /// delegates of package:flutter_localizations do not cover them, even in an
+  /// app that still uses package:flutter/material.dart.
+  static const localizationsDelegates = GlobalMaterialLocalizations.delegates;
 
   /// Opens the story camera and returns what the user created, or null when
   /// they closed the picker.
@@ -38,9 +28,7 @@ abstract final class StoryPicker {
 
   static bool _hasLocalizations(BuildContext context) =>
       Localizations.of<MaterialLocalizations>(context, MaterialLocalizations) != null &&
-      Localizations.of<cupertino.CupertinoLocalizations>(context, cupertino.CupertinoLocalizations) != null &&
-      Localizations.of<legacy.MaterialLocalizations>(context, legacy.MaterialLocalizations) != null &&
-      Localizations.of<legacy_cupertino.CupertinoLocalizations>(context, legacy_cupertino.CupertinoLocalizations) != null;
+      Localizations.of<CupertinoLocalizations>(context, CupertinoLocalizations) != null;
 
   static const _missingLocalizations =
       'story_picker: localizations are missing. Add StoryPicker.localizationsDelegates to '
