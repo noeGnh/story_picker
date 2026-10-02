@@ -1,6 +1,7 @@
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart' as ui show IconButton;
 import 'package:story_picker/story_picker.dart';
 
 /// A device without any camera.
@@ -9,7 +10,9 @@ class _NoCameraPlatform extends CameraPlatform {
   Future<List<CameraDescription>> availableCameras() async => [];
 }
 
-/// Host app with a button that opens the picker and keeps its result.
+/// Host app with a button that opens the picker and keeps its result. It still
+/// uses package:flutter/material.dart, to check the picker works in apps that
+/// have not migrated to package:material_ui.
 class _Host extends StatefulWidget {
   const _Host(this.options);
 
@@ -43,7 +46,7 @@ class _HostState extends State<_Host> {
 }
 
 Future<_HostState> _open(WidgetTester tester, [StoryPickerOptions options = const StoryPickerOptions()]) async {
-  await tester.pumpWidget(MaterialApp(home: _Host(options)));
+  await tester.pumpWidget(MaterialApp(localizationsDelegates: StoryPicker.localizationsDelegates, home: _Host(options)));
   await tester.tap(find.text('open'));
   await tester.pumpAndSettle();
   return tester.state<_HostState>(find.byType(_Host, skipOffstage: false));
@@ -51,6 +54,22 @@ Future<_HostState> _open(WidgetTester tester, [StoryPickerOptions options = cons
 
 void main() {
   setUp(() => CameraPlatform.instance = _NoCameraPlatform());
+
+  testWidgets('fails with a clear message when the localizations are missing', (tester) async {
+    late BuildContext context;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (c) {
+            context = c;
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+
+    expect(() => StoryPicker.pick(context), throwsA(isA<AssertionError>().having((e) => e.message, 'message', contains('StoryPicker.localizationsDelegates'))));
+  });
 
   testWidgets('shows a message when no camera is available', (tester) async {
     await _open(tester);
@@ -101,7 +120,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(EditableText), '  Hello story  ');
     // Next background.
-    await tester.tap(find.byWidgetPredicate((w) => w is IconButton && w.icon is Container));
+    await tester.tap(find.byWidgetPredicate((w) => w is ui.IconButton && w.icon is Container));
     await tester.pump();
     FocusManager.instance.primaryFocus?.unfocus();
     await tester.pumpAndSettle();

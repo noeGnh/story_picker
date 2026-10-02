@@ -1,5 +1,6 @@
 import 'package:auto_size_text_field/auto_size_text_field.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as legacy show InputBorder, InputDecoration, Material, MaterialType;
+import 'package:material_ui/material_ui.dart';
 
 import '../media_picker.dart';
 import '../options.dart';
@@ -65,8 +66,9 @@ class _TextStoryScreenState extends State<TextStoryScreen> {
                 Container(
                   alignment: keyboardVisible ? Alignment.topCenter : Alignment.center,
                   padding: EdgeInsets.fromLTRB(16, keyboardVisible ? 80 : 0, 16, 0),
-                  child: Material(
-                    type: MaterialType.transparency,
+                  // auto_size_text_field still uses package:flutter/material.dart.
+                  child: legacy.Material(
+                    type: legacy.MaterialType.transparency,
                     child: AutoSizeTextField(
                       controller: _text,
                       style: TextStyle(fontSize: 30, fontFamily: fontFamily, color: background.textColor),
@@ -75,8 +77,8 @@ class _TextStoryScreenState extends State<TextStoryScreen> {
                       minLines: 1,
                       maxLines: 16,
                       maxLength: 700,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
+                      decoration: legacy.InputDecoration(
+                        border: legacy.InputBorder.none,
                         hintText: options.translations.pressToWrite,
                         hintStyle: TextStyle(fontFamily: fontFamily, color: background.hintColor),
                       ),

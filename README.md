@@ -1,8 +1,8 @@
 # story_picker
 
-A story-style capture flow for Flutter apps: full-screen camera (tap for a photo, press and hold for a video), text stories on a colored background, the system media picker, and a preview before the result goes back to your app.
+A story-style capture flow for Flutter apps: full-screen camera (tap for a photo, press and hold for a video), text stories on a colored background and the system media picker. Photos and videos then open in an editor (text, drawing, emojis, filters, crop, trim) powered by [pro_image_editor](https://pub.dev/packages/pro_image_editor) and [pro_video_editor](https://pub.dev/packages/pro_video_editor), and the result goes back to your app.
 
-> 1.0 is in progress. Photo filters, cropping and video trimming will move to [pro_image_editor](https://pub.dev/packages/pro_image_editor) and [pro_video_editor](https://pub.dev/packages/pro_video_editor) before the stable release.
+Requires Flutter 3.47 or later. Android `minSdk` 24.
 
 ## Install
 
@@ -18,32 +18,31 @@ dependencies:
 
 ### Android
 
-Add the camera and microphone permissions, and the cropper activity, to `android/app/src/main/AndroidManifest.xml`:
+Add the camera and microphone permissions to `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
 <uses-permission android:name="android.permission.CAMERA" />
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
-<application ...>
-    <activity
-        android:name="com.yalantis.ucrop.UCropActivity"
-        android:screenOrientation="portrait"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-</application>
 ```
 
 No storage permission is needed: picking from the device goes through the system picker.
 
-Until the video trimmer is replaced, apps on AGP 9 also need these two lines in `android/gradle.properties`, because one of its native dependencies still uses the legacy Kotlin plugin:
-
-```properties
-android.builtInKotlin=false
-android.newDsl=false
-```
-
 ### iOS
 
 Add `NSCameraUsageDescription`, `NSMicrophoneUsageDescription` and `NSPhotoLibraryUsageDescription` to `ios/Runner/Info.plist`.
+
+### Localizations
+
+Since Flutter 3.47, Material and Cupertino live in `package:material_ui` and `package:cupertino_ui`; the copies still in `package:flutter` have their own localization types. The editors use the new libraries and some dependencies still use the old ones, so the picker needs both. Add its delegates to your app, whichever library it uses:
+
+```dart
+MaterialApp(
+  localizationsDelegates: StoryPicker.localizationsDelegates,
+  // ...
+)
+```
+
+In debug builds, `StoryPicker.pick` fails with an explicit message when they are missing.
 
 ## Usage
 
@@ -52,9 +51,9 @@ final result = await StoryPicker.pick(context);
 
 switch (result) {
   case StoryImageResult(:final path):
-    // Photo taken or picked, possibly filtered or cropped.
+    // Photo taken or picked, after editing.
   case StoryVideoResult(:final path):
-    // Video recorded or picked, possibly trimmed.
+    // Video recorded or picked, after editing and trimming.
   case StoryTextResult(:final text, :final background, :final fontFamily, :final textAlign):
     // Text story.
   case null:
@@ -75,19 +74,22 @@ StoryPicker.pick(
     textBackgrounds: StoryBackground.defaults,
     settingsBuilder: (context) => const MySettingsScreen(),
     theme: const StoryPickerTheme(accentColor: Colors.deepPurple),
+    // pro_image_editor configuration: translations, theme, tools…
+    editorConfigs: const ProImageEditorConfigs(i18n: I18n(done: 'Terminé', cancel: 'Annuler')),
   ),
 );
 ```
 
 | Option | Default | |
 | --- | --- | --- |
-| `theme` | `StoryPickerTheme()` | Colors of the overlay icons, recording bar, preview screens and accents. |
-| `translations` | English | All user-facing strings. `StoryPickerTranslations.fr` is built in. |
-| `maxVideoDuration` | 15 s | Longest video the camera records and the trimmer keeps. |
+| `theme` | `StoryPickerTheme()` | Colors of the overlay icons, recording bar and progress indicators. |
+| `translations` | English | Strings of the camera and text screens. `StoryPickerTranslations.fr` is built in. |
+| `maxVideoDuration` | 15 s | Longest video the camera records and the video editor lets the user keep. |
 | `enableTextStories` | `true` | Shows the text story button on the camera. |
 | `textFonts` | `[]` | Font families the text screen cycles through. Declare them in your app's `pubspec.yaml`. When empty, the default font is used and the font button is hidden. |
 | `textBackgrounds` | `StoryBackground.defaults` | Gradients the text screen cycles through. |
 | `settingsBuilder` | `null` | Screen opened by the settings button. The button is hidden when null. |
+| `editorConfigs` | `ProImageEditorConfigs()` | Base configuration of the photo and video editors, with [pro_image_editor](https://pub.dev/packages/pro_image_editor) types: `i18n` for translations, theme, tools… The video editor adds its own trim limits and drops the tools videos do not support. |
 
 ## Migrating from 0.0.x
 
@@ -96,11 +98,14 @@ StoryPicker.pick(
 | `StoryPicker.pick(context, transitionType: ..., options: Options(...))` | `StoryPicker.pick(context, options: StoryPickerOptions(...))` |
 | `Options.settingsTarget` (any widget) | `StoryPickerOptions.settingsBuilder` (`WidgetBuilder`) |
 | `Options.disableTextStories` | `StoryPickerOptions.enableTextStories` (inverted) |
-| `CustomizationOptions` and its 4 sub-classes | `StoryPickerTheme` |
+| `CustomizationOptions` and its 4 sub-classes | `StoryPickerTheme` for the camera and text screens, `editorConfigs` for the editors |
 | `videoDurationLimitInSeconds` (capped at 60) | `maxVideoDuration` (`Duration`, no cap) |
 | `GalleryCustomization.maxSelectable` | Removed: multi-selection never worked with the system picker. |
-| `Translations` | `StoryPickerTranslations`; `multiSelectionDoesntSupportVideos` removed, `cameraUnavailable` added |
+| `Translations` | `StoryPickerTranslations` keeps `pressToWrite`, `pressAndHoldToRecord` and adds `cameraUnavailable`, `videoExportFailed`; the editor strings move to `editorConfigs.i18n` |
 | `StoryPickerResult.resultType` + `pickedFiles` / `storyText` | Sealed `StoryImageResult`, `StoryVideoResult`, `StoryTextResult` |
 | `StoryText.colorHex`, `linearGradient`, `fontIndex`, … | `StoryTextResult.background` (`gradient`, `textColor`), `fontFamily`, `textAlign` |
 | Bundled fonts (FreightSans, MADECanvas, ProximaNova, AvenyT, Montserrat, OpenSans) | Removed: pass your own families in `textFonts`. |
 | `package:page_transition` re-exported | No longer exported. |
+| Filters (photofilters), crop (image_cropper), trim (video_trimmer) screens | pro_image_editor / pro_video_editor; remove `UCropActivity` from your manifest |
+| Recorded video: "delete / validate" dialog | Opens the video editor |
+| — | Add `StoryPicker.localizationsDelegates` to your `MaterialApp` |

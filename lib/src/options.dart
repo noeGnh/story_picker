@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:pro_image_editor/pro_image_editor.dart';
 
 /// Configuration of a [StoryPicker.pick] session.
 @immutable
@@ -11,6 +12,7 @@ class StoryPickerOptions {
     this.textFonts = const [],
     this.textBackgrounds = StoryBackground.defaults,
     this.settingsBuilder,
+    this.editorConfigs = const ProImageEditorConfigs(),
   });
 
   final StoryPickerTheme theme;
@@ -34,20 +36,19 @@ class StoryPickerOptions {
   /// Builds the screen opened by the settings button. The button is hidden
   /// when null.
   final WidgetBuilder? settingsBuilder;
+
+  /// Base configuration of the photo and video editors (pro_image_editor):
+  /// translations through `i18n`, theme, available tools… The video editor
+  /// adds its own trim limits and drops the tools videos do not support.
+  final ProImageEditorConfigs editorConfigs;
 }
 
 /// Colors used across the picker screens.
 @immutable
 class StoryPickerTheme {
-  const StoryPickerTheme({
-    this.accentColor = Colors.black,
-    this.overlayIconColor = Colors.white,
-    this.recordingColor = Colors.red,
-    this.previewBackgroundColor = Colors.white,
-    this.previewForegroundColor = Colors.black,
-  });
+  const StoryPickerTheme({this.accentColor = Colors.black, this.overlayIconColor = Colors.white, this.recordingColor = Colors.red});
 
-  /// Progress indicators and trimmer handles.
+  /// Progress indicators.
   final Color accentColor;
 
   /// Icons drawn over the camera preview and the text story background.
@@ -55,56 +56,31 @@ class StoryPickerTheme {
 
   /// Video recording progress bar.
   final Color recordingColor;
-
-  /// Background of the preview screens and their app bar.
-  final Color previewBackgroundColor;
-
-  /// Icons and title of the preview screens.
-  final Color previewForegroundColor;
 }
 
-/// User-facing strings. [StoryPickerTranslations.fr] provides French.
+/// User-facing strings of the camera and text screens. [StoryPickerTranslations.fr]
+/// provides French. The editors are translated through
+/// [StoryPickerOptions.editorConfigs].
 @immutable
 class StoryPickerTranslations {
   const StoryPickerTranslations({
-    this.preview = 'Preview',
     this.pressToWrite = 'Press to write',
     this.pressAndHoldToRecord = 'Press and hold to record a video',
-    this.filters = 'Filters',
-    this.save = 'Save',
-    this.cancel = 'Cancel',
-    this.recordedVideo = 'Recorded video',
-    this.whatDoYouWantToDo = 'What do you want to do?',
-    this.delete = 'Delete',
-    this.validate = 'Validate',
     this.cameraUnavailable = 'Camera unavailable. Check that the app is allowed to use it.',
+    this.videoExportFailed = 'The video could not be exported. Please try again.',
   });
 
   static const fr = StoryPickerTranslations(
-    preview: 'Aperçu',
     pressToWrite: 'Appuyez pour écrire',
     pressAndHoldToRecord: 'Maintenez pour filmer',
-    filters: 'Filtres',
-    save: 'Enregistrer',
-    cancel: 'Annuler',
-    recordedVideo: 'Vidéo enregistrée',
-    whatDoYouWantToDo: 'Que voulez-vous faire ?',
-    delete: 'Supprimer',
-    validate: 'Valider',
     cameraUnavailable: "Caméra indisponible. Vérifiez que l'application a le droit de l'utiliser.",
+    videoExportFailed: "La vidéo n'a pas pu être exportée. Veuillez réessayer.",
   );
 
-  final String preview;
   final String pressToWrite;
   final String pressAndHoldToRecord;
-  final String filters;
-  final String save;
-  final String cancel;
-  final String recordedVideo;
-  final String whatDoYouWantToDo;
-  final String delete;
-  final String validate;
   final String cameraUnavailable;
+  final String videoExportFailed;
 }
 
 /// Background of a text story.
