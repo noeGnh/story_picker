@@ -1,8 +1,3 @@
-library;
-
-export 'src/models/result.dart';
-export 'src/models/options.dart';
-export 'src/widgets/picker.dart';
-export 'src/utils/constants.dart';
-
-export 'package:page_transition/page_transition.dart';
+export 'src/options.dart';
+export 'src/result.dart';
+export 'src/story_picker.dart';

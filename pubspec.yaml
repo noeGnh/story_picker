@@ -1,7 +1,7 @@
 name: story_picker
-description: Story Picker.
-version: 0.0.8+17
-homepage: https://github.com/noeGnh/StoryPicker.git
+description: Story-style capture flow for Flutter - camera, text stories, system media picker and preview.
+version: 1.0.0-dev.1
+homepage: https://github.com/noeGnh/story_picker
 publish_to: 'none'
 
 environment:
@@ -12,16 +12,11 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_keyboard_visibility: ^7.0.1
   auto_size_text_field: ^2.3.0
-  just_the_tooltip: ^0.0.12
-  page_transition: ^2.2.2
   video_trimmer: ^5.0.0
   image_cropper: ^12.2.1
   file_picker: ^13.1.0
-  provider: ^6.1.5
   camera: ^0.12.1
-  logger: ^2.8.0
   path: ^1.9.1
 
   photofilters:
@@ -30,72 +25,13 @@ dependencies:
       ref: f48c58ae91292d7a871e197ae34e1bb493ef6173
 
   image: ^4.5.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  camera_platform_interface: ^2.14.0
 
 flutter:
   uses-material-design: true
 
-  fonts:
-    - family: FreightSans
-      fonts:
-        - asset: assets/fonts/FreightSans-Medium.otf
-          weight: 500
-
-    - family: MADECanvas
-      fonts:
-        - asset: assets/fonts/MADECanvas.otf
-
-    - family: ProximaNova
-      fonts:
-        - asset: assets/fonts/ProximaNova.otf
-
-    - family: AvenyT
-      fonts:
-        - asset: assets/fonts/AvenyT/AvenyT-Regular.otf
-          style: normal
-          weight: 400
-        - asset: assets/fonts/AvenyT/AvenyT-Medium.otf
-          weight: 500
-
-    - family: Montserrat
-      fonts:
-        - asset: assets/fonts/Montserrat/Montserrat-Italic.ttf
-          style: italic
-        - asset: assets/fonts/Montserrat/Montserrat-Black.ttf
-          weight: 900
-        - asset: assets/fonts/Montserrat/Montserrat-ExtraBold.ttf
-          weight: 800
-        - asset: assets/fonts/Montserrat/Montserrat-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/Montserrat/Montserrat-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Montserrat/Montserrat-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Montserrat/Montserrat-Regular.ttf
-          style: normal
-          weight: 400
-        - asset: assets/fonts/Montserrat/Montserrat-Light.ttf
-          weight: 300
-        - asset: assets/fonts/Montserrat/Montserrat-ExtraLight.ttf
-          weight: 200
-        - asset: assets/fonts/Montserrat/Montserrat-Thin.ttf
-          weight: 100
-
-    - family: OpenSans
-      fonts:
-        - asset: assets/fonts/OpenSans/OpenSans-Italic.ttf
-          style: italic
-        - asset: assets/fonts/OpenSans/OpenSans-ExtraBold.ttf
-          weight: 800
-        - asset: assets/fonts/OpenSans/OpenSans-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/OpenSans/OpenSans-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/OpenSans/OpenSans-Regular.ttf
-          style: normal
-          weight: 400
-        - asset: assets/fonts/OpenSans/OpenSans-Light.ttf
-          weight: 300

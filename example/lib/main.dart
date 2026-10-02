@@ -6,7 +6,7 @@ import 'package:story_picker/story_picker.dart';
 import 'package:video_player/video_player.dart';
 
 void main() {
-  runApp(App());
+  runApp(const App());
 }
 
 class App extends StatelessWidget {
@@ -14,7 +14,11 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: "Example", debugShowCheckedModeBanner: false, home: Scaffold(appBar: AppBar(title: Text("Example")), body: Content(), backgroundColor: Colors.blue));
+    return MaterialApp(
+      title: 'Example',
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(appBar: AppBar(title: const Text('Example')), body: const Content(), backgroundColor: Colors.blue),
+    );
   }
 }
 
@@ -26,45 +30,42 @@ class Content extends StatefulWidget {
 }
 
 class _ContentState extends State<Content> {
-  String? mediaPath;
-  ResultType? mediaType;
-  StoryText? storyText;
+  StoryPickerResult? _result;
+
+  Future<void> _pick() async {
+    final result = await StoryPicker.pick(
+      context,
+      options: StoryPickerOptions(
+        translations: StoryPickerTranslations.fr,
+        textFonts: const ['Montserrat', 'OpenSans'],
+        settingsBuilder: (_) => const Settings(),
+      ),
+    );
+    if (result != null) setState(() => _result = result);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
             width: 300,
             height: 300,
-            child: switch (mediaType) {
-              ResultType.TEXT => Container(
-                decoration: BoxDecoration(gradient: storyText!.linearGradient),
+            child: switch (_result) {
+              StoryImageResult(:final path) => Image.file(File(path)),
+              StoryVideoResult(:final path) => VideoPlayerWidget(path, key: ValueKey(path)),
+              StoryTextResult(:final text, :final textAlign, :final background, :final fontFamily) => Container(
+                decoration: BoxDecoration(gradient: background.gradient),
                 alignment: Alignment.center,
                 padding: const EdgeInsets.all(16),
-                child: Text(storyText!.text!, textAlign: storyText!.align, style: TextStyle(fontFamily: storyText!.font, fontSize: 24)),
+                child: Text(text, textAlign: textAlign, style: TextStyle(fontFamily: fontFamily, fontSize: 24, color: background.textColor)),
               ),
-              ResultType.IMAGE => Image.file(File(mediaPath!)),
-              ResultType.VIDEO => VideoPlayerWidget(mediaPath!, key: ValueKey(mediaPath)),
-              null => Container(),
+              null => const SizedBox(),
             },
           ),
-          ElevatedButton(
-            onPressed: () async {
-              var result = await StoryPicker.pick(context, transitionType: PageTransitionType.leftToRight, options: Options(settingsTarget: Settings()));
-              if (result != null) {
-                mediaPath = result.pickedFiles?.first.path;
-                mediaType = result.resultType;
-                storyText = result.storyText;
-              }
-              setState(() {});
-            },
-            child: Text('Pick It'),
-          ),
+          ElevatedButton(onPressed: _pick, child: const Text('Pick It')),
         ],
       ),
     );
@@ -81,20 +82,12 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
-
-  @override
-  void initState() {
-    _controller = VideoPlayerController.file(File(widget.path));
-
-    _initializeVideoPlayerFuture = _controller.initialize();
-
-    _controller.setLooping(true);
-    _controller.play();
-
-    super.initState();
-  }
+  late final VideoPlayerController _controller = VideoPlayerController.file(File(widget.path));
+  late final Future<void> _initialized = _controller.initialize().then((_) {
+    _controller
+      ..setLooping(true)
+      ..play();
+  });
 
   @override
   void dispose() {
@@ -105,13 +98,10 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _initializeVideoPlayerFuture,
+      future: _initialized,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return AspectRatio(aspectRatio: _controller.value.aspectRatio, child: VideoPlayer(_controller));
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
+        if (snapshot.connectionState != ConnectionState.done) return const Center(child: CircularProgressIndicator());
+        return AspectRatio(aspectRatio: _controller.value.aspectRatio, child: VideoPlayer(_controller));
       },
     );
   }
