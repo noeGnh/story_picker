@@ -10,7 +10,7 @@ Options? options;
 class VideoPreview extends StatelessWidget {
   final List<FileModel?>? files;
 
-  VideoPreview({required Options? imagePreviewOptions, this.files}) {
+  VideoPreview({super.key, required Options? imagePreviewOptions, this.files}) {
     options = imagePreviewOptions;
   }
 
@@ -18,7 +18,7 @@ class VideoPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<VideoPreviewProvider>(
       create: (_) => VideoPreviewProvider(),
-      child: VideoPreviewContent(files: this.files),
+      child: VideoPreviewContent(files: files),
     );
   }
 }
@@ -26,10 +26,10 @@ class VideoPreview extends StatelessWidget {
 class VideoPreviewContent extends StatefulWidget {
   final List<FileModel?>? files;
 
-  VideoPreviewContent({Key? key, this.files}) : super(key: key);
+  const VideoPreviewContent({super.key, this.files});
 
   @override
-  _VideoPreviewContentState createState() => _VideoPreviewContentState();
+  State<VideoPreviewContent> createState() => _VideoPreviewContentState();
 }
 
 class _VideoPreviewContentState extends State<VideoPreviewContent> {
@@ -51,15 +51,9 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
       backgroundColor: options!.customizationOptions.previewScreenCustomization.bgColor,
       appBar: AppBar(
         elevation: 0.0,
-        title: Text(
-          options!.translations.preview,
-          style: TextStyle(color: options!.customizationOptions.previewScreenCustomization.textColor),
-        ),
+        title: Text(options!.translations.preview, style: TextStyle(color: options!.customizationOptions.previewScreenCustomization.textColor)),
         leading: GestureDetector(
-          child: Icon(
-            Icons.arrow_back,
-            color: options!.customizationOptions.previewScreenCustomization.iconsColor,
-          ),
+          child: Icon(Icons.arrow_back, color: options!.customizationOptions.previewScreenCustomization.iconsColor),
           onTap: () {
             Navigator.pop(context, null);
           },
@@ -68,15 +62,12 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
           GestureDetector(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Icon(
-                Icons.check,
-                color: options!.customizationOptions.previewScreenCustomization.iconsColor,
-              ),
+              child: Icon(Icons.check, color: options!.customizationOptions.previewScreenCustomization.iconsColor),
             ),
             onTap: () {
               _videoPreviewProvider.submit(context);
             },
-          )
+          ),
         ],
         backgroundColor: options!.customizationOptions.appBarColor,
       ),
@@ -86,8 +77,10 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
 }
 
 class TrimmerView extends StatefulWidget {
+  const TrimmerView({super.key});
+
   @override
-  _TrimmerViewState createState() => _TrimmerViewState();
+  State<TrimmerView> createState() => _TrimmerViewState();
 }
 
 class _TrimmerViewState extends State<TrimmerView> {
@@ -103,13 +96,9 @@ class _TrimmerViewState extends State<TrimmerView> {
             children: [
               Visibility(
                 visible: provider.progressVisibility,
-                child: LinearProgressIndicator(
-                  backgroundColor: options!.customizationOptions.accentColor,
-                ),
+                child: LinearProgressIndicator(backgroundColor: options!.customizationOptions.accentColor),
               ),
-              Expanded(
-                child: VideoViewer(trimmer: provider.trimmer),
-              ),
+              Expanded(child: VideoViewer(trimmer: provider.trimmer)),
               Center(
                 child: TrimViewer(
                   viewerHeight: 50.0,
@@ -135,24 +124,13 @@ class _TrimmerViewState extends State<TrimmerView> {
               ),
               TextButton(
                 child: provider.isPlaying!
-                    ? Icon(
-                        Icons.pause,
-                        size: 80.0,
-                        color: options!.customizationOptions.previewScreenCustomization.iconsColor,
-                      )
-                    : Icon(
-                        Icons.play_arrow,
-                        size: 80.0,
-                        color: options!.customizationOptions.previewScreenCustomization.iconsColor,
-                      ),
+                    ? Icon(Icons.pause, size: 80.0, color: options!.customizationOptions.previewScreenCustomization.iconsColor)
+                    : Icon(Icons.play_arrow, size: 80.0, color: options!.customizationOptions.previewScreenCustomization.iconsColor),
                 onPressed: () async {
-                  bool? playbackState = await provider.trimmer.videPlaybackControl(
-                    startValue: provider.startValue,
-                    endValue: provider.endValue,
-                  );
+                  bool? playbackState = await provider.trimmer.videoPlaybackControl(startValue: provider.startValue, endValue: provider.endValue);
                   provider.isPlaying = playbackState;
                 },
-              )
+              ),
             ],
           ),
         );

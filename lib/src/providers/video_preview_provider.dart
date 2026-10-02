@@ -6,67 +6,60 @@ import 'package:story_picker/src/models/file_model.dart';
 import 'package:story_picker/src/models/result.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 
-class VideoPreviewProvider extends ChangeNotifier{
-
+class VideoPreviewProvider extends ChangeNotifier {
   final Trimmer _trimmer = Trimmer();
 
-  double _startValue = 0.0;
-  double _endValue = 0.0;
+  double startValue = 0.0;
+  double endValue = 0.0;
 
   bool? _isPlaying = false;
   bool _progressVisibility = false;
 
-  get trimmer => this._trimmer;
+  Trimmer get trimmer => _trimmer;
 
-  double get endValue => this._endValue;
+  bool? get isPlaying => _isPlaying;
 
-  bool? get isPlaying => this._isPlaying;
+  bool get progressVisibility => _progressVisibility;
 
-  double get startValue => this._startValue;
+  set isPlaying(bool? v) {
+    _isPlaying = v;
+    notifyListeners();
+  }
 
-  bool get progressVisibility => this._progressVisibility;
-
-  set isPlaying(bool? v){ this._isPlaying = v; notifyListeners(); }
-
-  set endValue(double v){ this._endValue = v; }
-
-  set startValue(double v){ this._startValue = v; }
-
-  set progressVisibility(bool v){ this._progressVisibility = v; notifyListeners(); }
+  set progressVisibility(bool v) {
+    _progressVisibility = v;
+    notifyListeners();
+  }
 
   List<FileModel?>? files;
 
-  loadVideoTrimmer() async => await _trimmer.loadVideo(videoFile: File(files![0]!.filePath!));
+  Future<void> loadVideoTrimmer() async => await _trimmer.loadVideo(videoFile: File(files![0]!.filePath!));
 
-  submit(BuildContext context) async {
+  Future<void> submit(BuildContext context) async {
+    progressVisibility = true;
 
-    this.progressVisibility = true;
-
-    this._trimmer.saveTrimmedVideo(
-      startValue: _startValue,
-      endValue: _endValue,
+    _trimmer.saveTrimmedVideo(
+      startValue: startValue,
+      endValue: endValue,
       onSave: (String? outputPath) {
+        progressVisibility = false;
 
-        this.progressVisibility = false;
+        if (outputPath == null || !context.mounted) return;
 
-        List<PickedFile> pickedFiles = [];
-
-        if (files != null){
-          files!.map((file) {
-            pickedFiles.add(
-                PickedFile(
-                    path: outputPath,
-                    name: basename(outputPath!)
-                )
-            );
-          }).toList();
-
-          Navigator.pop(context, StoryPickerResult(pickedFiles: pickedFiles, resultType: ResultType.VIDEO));
-        }
-
-      }
+        Navigator.pop(
+          context,
+          StoryPickerResult(
+            pickedFiles: [PickedFile(path: outputPath, name: basename(outputPath))],
+            resultType: ResultType.VIDEO,
+          ),
+        );
+      },
     );
-
   }
 
+  @override
+  void dispose() {
+    _trimmer.dispose();
+    super.dispose();
+  }
 }
