@@ -74,7 +74,7 @@ packages:
     source: hosted
     version: "0.10.3+1"
   camera_platform_interface:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: camera_platform_interface
       sha256: "9365babc7488a9e93d0ed6dcccd917619fb12ea6f9e601519e1191d4890ee2fe"
@@ -222,54 +222,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_keyboard_visibility:
-    dependency: "direct main"
-    description:
-      name: flutter_keyboard_visibility
-      sha256: dabc6c146897b2d07794b096e3e696212c08ac1500b4344ba84f0bd6878b9a51
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.0.1"
-  flutter_keyboard_visibility_linux:
-    dependency: transitive
-    description:
-      name: flutter_keyboard_visibility_linux
-      sha256: "478ccab140efbf8e0725063da5522a6c512a6ed33b9687161855a1eb6a668abe"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
-  flutter_keyboard_visibility_macos:
-    dependency: transitive
-    description:
-      name: flutter_keyboard_visibility_macos
-      sha256: "7bee81be3c5aa06950b11e68cc947b4b567079456ab66a261c3fee01a5194fc0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
-  flutter_keyboard_visibility_platform_interface:
-    dependency: transitive
-    description:
-      name: flutter_keyboard_visibility_platform_interface
-      sha256: c16de89f36e655562baed76d8e05a9f19c884707e569b3ae6c121e0f41adfabe
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0"
-  flutter_keyboard_visibility_web:
-    dependency: transitive
-    description:
-      name: flutter_keyboard_visibility_web
-      sha256: "2200cc44d1d743b83176bd078a341780bd054a0217ec35a08679387c0989fb35"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0"
-  flutter_keyboard_visibility_windows:
-    dependency: transitive
-    description:
-      name: flutter_keyboard_visibility_windows
-      sha256: fde7b3fd757bcd31474e6575d0e12ccb3d244841e97645b6d78df7bf86a9e341
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -376,14 +328,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.20.2"
-  just_the_tooltip:
-    dependency: "direct main"
-    description:
-      name: just_the_tooltip
-      sha256: "7a081133d57285bfb41b331f411006d57b433d7b35772e6155745f6a7a09cb82"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.12"
   leak_tracker:
     dependency: transitive
     description:
@@ -416,14 +360,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
-  logger:
-    dependency: "direct main"
-    description:
-      name: logger
-      sha256: "2a0dc097e7b01d942475bdd552356db2d0f768b05540bd4b2b53f1840f2239a7"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.8.0"
   matcher:
     dependency: transitive
     description:
@@ -448,22 +384,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.0"
-  nested:
-    dependency: transitive
-    description:
-      name: nested
-      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
-  page_transition:
-    dependency: "direct main"
-    description:
-      name: page_transition
-      sha256: "61dac670e80ebdd7da847c21841e1dfd8f9ab483b3a0c5fddc877ad8d23b69ee"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.2"
   path:
     dependency: "direct main"
     description:
@@ -569,14 +489,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.4"
-  provider:
-    dependency: "direct main"
-    description:
-      name: provider
-      sha256: "4e82183fa20e5ca25703ead7e05de9e4cceed1fbd1eadc1ac3cb6f565a09f272"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.1.5+1"
   sky_engine:
     dependency: transitive
     description: flutter
