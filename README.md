@@ -109,3 +109,7 @@ StoryPicker.pick(
 | Filters (photofilters), crop (image_cropper), trim (video_trimmer) screens | pro_image_editor / pro_video_editor; remove `UCropActivity` from your manifest |
 | Recorded video: "delete / validate" dialog | Opens the video editor |
 | — | Add `StoryPicker.localizationsDelegates` to your `MaterialApp` |
+
+## License
+
+MIT, see [LICENSE](LICENSE).
