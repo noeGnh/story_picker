@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          (cd example && flutter pub get)
+
+      # Line length comes from analysis_options.yaml (formatter.page_width).
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed lib test example/lib example/test
+
+      - name: Analyze
+        run: |
+          flutter analyze
+          (cd example && flutter analyze)
+
+      - name: Test
+        run: |
+          flutter test --coverage
+          (cd example && flutter test)
+
+      # The floor sits a few points below the current coverage (~90%) to catch
+      # regressions; raise it as tests are added.
+      - name: Enforce coverage floor
+        run: |
+          awk -v thresh=85 '
+            /^LF:/ { n=$0; sub("^LF:", "", n); lf += n }
+            /^LH:/ { n=$0; sub("^LH:", "", n); lh += n }
+            END {
+              pct = (lf > 0) ? (lh / lf * 100) : 0
+              printf "Line coverage: %.2f%% (%d/%d), floor is %d%%\n", pct, lh, lf, thresh
+              if (pct + 0 < thresh) exit 1
+            }
+          ' coverage/lcov.info
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lcov-report
+          path: coverage/lcov.info
+          retention-days: 14
+
+  # Builds the example app, so native plugin and Gradle (9 / AGP 9) breakages
+  # show up on the pull request rather than in apps using the package.
+  build-android:
+    name: Build example APK
+    needs: quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Build debug APK
+        working-directory: example
+        run: flutter build apk --debug
