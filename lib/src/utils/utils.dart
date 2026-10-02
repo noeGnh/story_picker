@@ -1,30 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
-abstract class StoryUtils {
-  static String printDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-
-    String twoDigitHours = twoDigits(duration.inHours);
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-
-    return duration.inHours > 0 ? "$twoDigitHours:$twoDigitMinutes:$twoDigitSeconds" : "$twoDigitMinutes:$twoDigitSeconds";
-  }
-
-  static void showToast(String msg) {
-    Fluttertoast.showToast(
-      msg: msg,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.black87,
-      textColor: Colors.white,
-      fontSize: 16.0,
-      webShowClose: true,
-    );
-  }
-}
 
 extension HexColor on Color {
   /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
@@ -36,9 +10,10 @@ extension HexColor on Color {
   }
 
   /// Prefixes a hash sign if [leadingHashSign] is set to `true` (default is `true`).
-  String toHex({bool leadingHashSign = true}) => '${leadingHashSign ? '#' : ''}'
-      '${(a * 255).toInt().toRadixString(16).padLeft(2, '0')}'
-      '${(r * 255).toInt().toRadixString(16).padLeft(2, '0')}'
-      '${(g * 255).toInt().toRadixString(16).padLeft(2, '0')}'
-      '${(b * 255).toInt().toRadixString(16).padLeft(2, '0')}';
+  String toHex({bool leadingHashSign = true}) =>
+      '${leadingHashSign ? '#' : ''}'
+      '${(a * 255).round().toRadixString(16).padLeft(2, '0')}'
+      '${(r * 255).round().toRadixString(16).padLeft(2, '0')}'
+      '${(g * 255).round().toRadixString(16).padLeft(2, '0')}'
+      '${(b * 255).round().toRadixString(16).padLeft(2, '0')}';
 }

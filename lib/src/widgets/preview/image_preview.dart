@@ -12,11 +12,7 @@ class ImagePreview extends StatelessWidget {
   final List<FileModel?>? files;
   final bool showAddButton;
 
-  ImagePreview({
-    required Options? imagePreviewOptions,
-    required this.showAddButton,
-    this.files,
-  }) {
+  ImagePreview({super.key, required Options? imagePreviewOptions, required this.showAddButton, this.files}) {
     options = imagePreviewOptions;
   }
 
@@ -24,10 +20,7 @@ class ImagePreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ImagePreviewProvider>(
       create: (_) => ImagePreviewProvider(),
-      child: ImagePreviewContent(
-        files: this.files,
-        showAddButton: this.showAddButton,
-      ),
+      child: ImagePreviewContent(files: files, showAddButton: showAddButton),
     );
   }
 }
@@ -36,10 +29,10 @@ class ImagePreviewContent extends StatefulWidget {
   final List<FileModel?>? files;
   final bool? showAddButton;
 
-  ImagePreviewContent({Key? key, this.files, this.showAddButton}) : super(key: key);
+  const ImagePreviewContent({super.key, this.files, this.showAddButton});
 
   @override
-  _ImagePreviewContentState createState() => _ImagePreviewContentState();
+  State<ImagePreviewContent> createState() => _ImagePreviewContentState();
 }
 
 class _ImagePreviewContentState extends State<ImagePreviewContent> {
@@ -49,15 +42,12 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
     return Card(
       child: Stack(
         children: [
-          Image.file(
-            File(_imagePreviewProvider.files!.elementAt(index)!.filePath!),
-            fit: BoxFit.contain,
-          ),
+          Image.file(File(_imagePreviewProvider.files!.elementAt(index)!.filePath!), fit: BoxFit.contain),
           Positioned(
             bottom: 10,
             right: 0,
             left: 0,
-            child: Container(
+            child: SizedBox(
               height: 60,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -65,38 +55,22 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                 children: [
                   GestureDetector(
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: options!.customizationOptions.previewScreenCustomization.bgColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.photo_filter_sharp,
-                        color: options!.customizationOptions.previewScreenCustomization.iconsColor,
-                        size: 32,
-                      ),
+                      decoration: BoxDecoration(color: options!.customizationOptions.previewScreenCustomization.bgColor, shape: BoxShape.circle),
                       alignment: Alignment.center,
                       width: 54,
+                      child: Icon(Icons.photo_filter_sharp, color: options!.customizationOptions.previewScreenCustomization.iconsColor, size: 32),
                     ),
                     onTap: () {
                       _imagePreviewProvider.addFilter(context, _imagePreviewProvider.files!.elementAt(index)!, options);
                     },
                   ),
-                  SizedBox(
-                    width: 30,
-                  ),
+                  SizedBox(width: 30),
                   GestureDetector(
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: options!.customizationOptions.previewScreenCustomization.bgColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.edit,
-                        color: options!.customizationOptions.previewScreenCustomization.iconsColor,
-                        size: 32,
-                      ),
+                      decoration: BoxDecoration(color: options!.customizationOptions.previewScreenCustomization.bgColor, shape: BoxShape.circle),
                       alignment: Alignment.center,
                       width: 54,
+                      child: Icon(Icons.edit, color: options!.customizationOptions.previewScreenCustomization.iconsColor, size: 32),
                     ),
                     onTap: () {
                       _imagePreviewProvider.edit(_imagePreviewProvider.files!.elementAt(index)!, options!);
@@ -127,15 +101,9 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
       backgroundColor: options!.customizationOptions.previewScreenCustomization.bgColor,
       appBar: AppBar(
         elevation: 0.0,
-        title: Text(
-          options!.translations.preview,
-          style: TextStyle(color: options!.customizationOptions.previewScreenCustomization.textColor),
-        ),
+        title: Text(options!.translations.preview, style: TextStyle(color: options!.customizationOptions.previewScreenCustomization.textColor)),
         leading: GestureDetector(
-          child: Icon(
-            Icons.arrow_back,
-            color: options!.customizationOptions.previewScreenCustomization.iconsColor,
-          ),
+          child: Icon(Icons.arrow_back, color: options!.customizationOptions.previewScreenCustomization.iconsColor),
           onTap: () {
             Navigator.pop(context, null);
           },
@@ -144,15 +112,12 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
           GestureDetector(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Icon(
-                Icons.check,
-                color: options!.customizationOptions.previewScreenCustomization.iconsColor,
-              ),
+              child: Icon(Icons.check, color: options!.customizationOptions.previewScreenCustomization.iconsColor),
             ),
             onTap: () {
               _imagePreviewProvider.submit(context);
             },
-          )
+          ),
         ],
         backgroundColor: options!.customizationOptions.appBarColor,
       ),
@@ -173,11 +138,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                       padding: EdgeInsets.symmetric(horizontal: 50),
                       child: Center(
                         child: GestureDetector(
-                          child: Icon(
-                            Icons.add_circle,
-                            color: options!.customizationOptions.previewScreenCustomization.iconsColor,
-                            size: 128,
-                          ),
+                          child: Icon(Icons.add_circle, color: options!.customizationOptions.previewScreenCustomization.iconsColor, size: 128),
                           onTap: () {
                             Navigator.pop(context, null);
                           },

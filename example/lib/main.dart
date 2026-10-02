@@ -28,6 +28,7 @@ class Content extends StatefulWidget {
 class _ContentState extends State<Content> {
   String? mediaPath;
   ResultType? mediaType;
+  StoryText? storyText;
 
   @override
   Widget build(BuildContext context) {
@@ -40,14 +41,25 @@ class _ContentState extends State<Content> {
           SizedBox(
             width: 300,
             height: 300,
-            child: mediaPath != null && mediaType != null ? (mediaType == ResultType.IMAGE ? Image.file(File(mediaPath!)) : VideoPlayerWidget(mediaPath!)) : Container(),
+            child: switch (mediaType) {
+              ResultType.TEXT => Container(
+                decoration: BoxDecoration(gradient: storyText!.linearGradient),
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(16),
+                child: Text(storyText!.text!, textAlign: storyText!.align, style: TextStyle(fontFamily: storyText!.font, fontSize: 24)),
+              ),
+              ResultType.IMAGE => Image.file(File(mediaPath!)),
+              ResultType.VIDEO => VideoPlayerWidget(mediaPath!, key: ValueKey(mediaPath)),
+              null => Container(),
+            },
           ),
           ElevatedButton(
             onPressed: () async {
               var result = await StoryPicker.pick(context, transitionType: PageTransitionType.leftToRight, options: Options(settingsTarget: Settings()));
               if (result != null) {
-                mediaPath = result.pickedFiles![0].path;
+                mediaPath = result.pickedFiles?.first.path;
                 mediaType = result.resultType;
+                storyText = result.storyText;
               }
               setState(() {});
             },
@@ -82,6 +94,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     _controller.play();
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override

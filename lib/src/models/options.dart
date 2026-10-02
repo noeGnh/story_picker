@@ -6,13 +6,9 @@ class Options {
   CustomizationOptions customizationOptions;
   bool disableTextStories;
 
-  Options({
-    this.settingsTarget,
-    Translations? translations,
-    CustomizationOptions? customizationOptions,
-    this.disableTextStories = false,
-  })  : this.translations = translations ?? Translations(),
-        this.customizationOptions = customizationOptions ?? CustomizationOptions();
+  Options({this.settingsTarget, Translations? translations, CustomizationOptions? customizationOptions, this.disableTextStories = false})
+    : translations = translations ?? Translations(),
+      customizationOptions = customizationOptions ?? CustomizationOptions();
 }
 
 class CustomizationOptions {
@@ -32,10 +28,10 @@ class CustomizationOptions {
     CameraCustomization? cameraCustomization,
     GalleryCustomization? galleryCustomization,
     PreviewScreenCustomization? previewScreenCustomization,
-  })  : this.textCustomization = textCustomization ?? TextCustomization(),
-        this.cameraCustomization = cameraCustomization ?? CameraCustomization(),
-        this.galleryCustomization = galleryCustomization ?? GalleryCustomization(),
-        this.previewScreenCustomization = previewScreenCustomization ?? PreviewScreenCustomization();
+  }) : textCustomization = textCustomization ?? TextCustomization(),
+       cameraCustomization = cameraCustomization ?? CameraCustomization(),
+       galleryCustomization = galleryCustomization ?? GalleryCustomization(),
+       previewScreenCustomization = previewScreenCustomization ?? PreviewScreenCustomization();
 }
 
 class GalleryCustomization {
@@ -43,12 +39,8 @@ class GalleryCustomization {
   Color iconsColor;
   int maxSelectable;
 
-  GalleryCustomization({
-    this.iconsColor = Colors.black,
-    this.bgColor = Colors.white,
-    this.maxSelectable = 1,
-  }) {
-    if (this.maxSelectable <= 0) {
+  GalleryCustomization({this.iconsColor = Colors.black, this.bgColor = Colors.white, this.maxSelectable = 1}) {
+    if (maxSelectable <= 0) {
       throw ArgumentError('The value must be greater than 0');
     }
   }
@@ -58,18 +50,13 @@ class CameraCustomization {
   Color iconsColor;
   Color videoCaptureProgressIndicatorColor;
 
-  CameraCustomization({
-    this.iconsColor = Colors.white,
-    this.videoCaptureProgressIndicatorColor = Colors.red,
-  });
+  CameraCustomization({this.iconsColor = Colors.white, this.videoCaptureProgressIndicatorColor = Colors.red});
 }
 
 class TextCustomization {
   Color iconsColor;
 
-  TextCustomization({
-    this.iconsColor = Colors.white,
-  });
+  TextCustomization({this.iconsColor = Colors.white});
 }
 
 class PreviewScreenCustomization {
@@ -77,11 +64,7 @@ class PreviewScreenCustomization {
   Color textColor;
   Color bgColor;
 
-  PreviewScreenCustomization({
-    this.iconsColor = Colors.black,
-    this.textColor = Colors.black,
-    this.bgColor = Colors.white,
-  });
+  PreviewScreenCustomization({this.iconsColor = Colors.black, this.textColor = Colors.black, this.bgColor = Colors.white});
 }
 
 class Translations {

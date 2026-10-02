@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:camera/camera.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:logger/logger.dart';
@@ -10,9 +9,9 @@ import 'package:path/path.dart';
 import 'package:story_picker/src/models/file_model.dart';
 import 'package:story_picker/src/models/options.dart';
 import 'package:story_picker/src/models/result.dart';
+import 'package:story_picker/src/utils/media_picker.dart';
 import 'package:story_picker/src/widgets/preview/image_preview.dart';
-import 'package:story_picker/src/widgets/preview/video_preview.dart';
-import 'package:story_picker/src/widgets/text.dart' as textScreen;
+import 'package:story_picker/src/widgets/text.dart' as text_screen;
 
 class CameraProvider extends ChangeNotifier {
   final Logger logger = Logger();
@@ -30,7 +29,7 @@ class CameraProvider extends ChangeNotifier {
   late Translations _translations;
 
   set translations(Translations translations) {
-    this._translations = translations;
+    _translations = translations;
   }
 
   FlashMode flashMode = FlashMode.off;
@@ -56,20 +55,22 @@ class CameraProvider extends ChangeNotifier {
 
   void getAvailableCameras(bool mounted) {
     Timer(const Duration(milliseconds: 500), () {
-      availableCameras().then((availableCameras) {
-        cameras = availableCameras;
-        if (cameras!.length > 0) {
-          selectedCameraIdx = 0;
+      availableCameras()
+          .then((availableCameras) {
+            cameras = availableCameras;
+            if (cameras!.isNotEmpty) {
+              selectedCameraIdx = 0;
 
-          notifyListeners();
+              notifyListeners();
 
-          _initCameraController(cameras![selectedCameraIdx], mounted).then((void v) {});
-        } else {
-          logger.w("No camera available");
-        }
-      }).catchError((e) {
-        logger.e('Error: ${e.code}\nError Message: ${e.message}');
-      });
+              _initCameraController(cameras![selectedCameraIdx], mounted).then((void v) {});
+            } else {
+              logger.w("No camera available");
+            }
+          })
+          .catchError((e) {
+            logger.e('Error: ${e.code}\nError Message: ${e.message}');
+          });
     });
   }
 
@@ -113,25 +114,22 @@ class CameraProvider extends ChangeNotifier {
     _initCameraController(selectedCamera, mounted);
   }
 
-  void onCapturePressed(context, options) async {
+  void onCapturePressed(BuildContext context, Options? options) async {
     try {
-      String? path;
-
-      await controller!.takePicture().then((XFile file) {
-        path = file.path;
-      });
+      final path = (await controller!.takePicture()).path;
+      if (!context.mounted) return;
 
       StoryPickerResult? result = await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => ImagePreview(
-            files: [FileModel(filePath: path, title: basename(path!))],
+            files: [FileModel(filePath: path, title: basename(path))],
             imagePreviewOptions: options,
             showAddButton: false,
           ),
         ),
       );
 
-      if (result != null) Navigator.pop(context, result);
+      if (result != null && context.mounted) Navigator.pop(context, result);
     } catch (e) {
       logger.e(e);
     }
@@ -170,25 +168,24 @@ class CameraProvider extends ChangeNotifier {
 
     if (mounted) notifyListeners();
 
+    if (!context.mounted) return;
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: new Text(
-            this._translations.recordedVideo,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: new Text(this._translations.whatDoYouWantToDo),
+          title: Text(_translations.recordedVideo, style: TextStyle(fontWeight: FontWeight.bold)),
+          content: Text(_translations.whatDoYouWantToDo),
           actions: <Widget>[
-            new TextButton(
-              child: new Text(this._translations.delete),
+            TextButton(
+              child: Text(_translations.delete),
               onPressed: () {
                 Navigator.of(context, rootNavigator: true).pop();
               },
             ),
-            new TextButton(
-              child: new Text(this._translations.validate),
+            TextButton(
+              child: Text(_translations.validate),
               onPressed: () {
                 Navigator.of(context, rootNavigator: true).pop();
 
@@ -224,17 +221,14 @@ class CameraProvider extends ChangeNotifier {
     _duration = 0;
     _timer = null;
 
-    _timer = Timer.periodic(
-      const Duration(seconds: 1),
-      (timer) {
-        notifyListeners();
-        if (_duration! >= _durationLimit!) {
-          stopVideoRecording(context, mounted);
-        } else {
-          _duration = _duration! + 1;
-        }
-      },
-    );
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      notifyListeners();
+      if (_duration! >= _durationLimit!) {
+        stopVideoRecording(context, mounted);
+      } else {
+        _duration = _duration! + 1;
+      }
+    });
   }
 
   void cancelTimer() {
@@ -257,73 +251,15 @@ class CameraProvider extends ChangeNotifier {
     _durationLimit = d <= 60 ? d : 60;
   }
 
-  openSettingsScreen(BuildContext context, dynamic target) async {
-    await Navigator.of(context).push(PageTransition(
-      child: target,
-      type: PageTransitionType.leftToRight,
-    ));
+  Future<void> openSettingsScreen(BuildContext context, dynamic target) async {
+    await Navigator.of(context).push(PageTransition(child: target, type: PageTransitionType.leftToRight));
   }
 
-  openGalleryScreen(BuildContext context, Options? options) async {
-    const imgExtensions = ['jpg', 'png', 'jpeg', 'gif', 'webp'];
-    const vidExtensions = ['mp4', 'mkv', 'mov', 'wmv', 'flv', 'avi', 'webm'];
+  Future<void> openGalleryScreen(BuildContext context, Options? options) => pickMediaAndPreview(context, options);
 
-    FilePickerResult? pickedResult = await FilePicker.platform.pickFiles(
-      type: FileType.media,
-    );
+  Future<void> openTextScreen(BuildContext context, Options? options) async {
+    StoryPickerResult? result = await Navigator.of(context).push(PageTransition(child: text_screen.Text(options), type: PageTransitionType.bottomToTop));
 
-    if (pickedResult != null) {
-      StoryPickerResult? result;
-
-      if (imgExtensions.contains(extension(pickedResult.files.single.path!).substring(1).toLowerCase())) {
-        result = await Navigator.of(context).push(
-          PageTransition(
-            child: ImagePreview(
-              files: [
-                FileModel(
-                  filePath: pickedResult.files.single.path!,
-                  relativePath: pickedResult.files.single.path!,
-                  thumbPath: pickedResult.files.single.path!,
-                  title: basename(pickedResult.files.single.path!),
-                ),
-              ],
-              imagePreviewOptions: options,
-              showAddButton: options!.customizationOptions.galleryCustomization.maxSelectable > 1,
-            ),
-            type: PageTransitionType.bottomToTop,
-          ),
-        );
-      } else if (vidExtensions.contains(extension(pickedResult.files.single.path!).substring(1).toLowerCase())) {
-        result = await Navigator.of(context).push(
-          PageTransition(
-            child: VideoPreview(
-              files: [
-                FileModel(
-                  filePath: pickedResult.files.single.path!,
-                  relativePath: pickedResult.files.single.path!,
-                  thumbPath: pickedResult.files.single.path!,
-                  title: basename(pickedResult.files.single.path!),
-                )
-              ],
-              imagePreviewOptions: options,
-            ),
-            type: PageTransitionType.bottomToTop,
-          ),
-        );
-      }
-
-      if (result != null) Navigator.pop(context, result);
-    }
-  }
-
-  openTextScreen(BuildContext context, Options? options) async {
-    StoryPickerResult? result = await Navigator.of(context).push(
-      PageTransition(
-        child: textScreen.Text(options),
-        type: PageTransitionType.bottomToTop,
-      ),
-    );
-
-    if (result != null) Navigator.pop(context, result);
+    if (result != null && context.mounted) Navigator.pop(context, result);
   }
 }

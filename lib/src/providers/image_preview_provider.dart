@@ -5,7 +5,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:path/path.dart';
 import 'package:photofilters/filters/preset_filters.dart';
 import 'package:photofilters/widgets/photo_filter.dart';
-import 'package:image/image.dart' as imageLib;
+import 'package:image/image.dart' as image_lib;
 import 'package:story_picker/src/models/file_model.dart';
 import 'package:story_picker/src/models/options.dart';
 import 'package:story_picker/src/models/result.dart';
@@ -16,41 +16,34 @@ class ImagePreviewProvider extends ChangeNotifier {
   late Translations _translations;
 
   set translations(Translations translations) {
-    this._translations = translations;
+    _translations = translations;
   }
 
-  _updateFiles(FileModel file, File resultFile) {
-    int index = this.files!.indexOf(file);
+  void _updateFiles(FileModel file, File resultFile) {
+    int index = files!.indexOf(file);
     file.filePath = resultFile.path;
-    this.files![index] = file;
+    files![index] = file;
 
     notifyListeners();
   }
 
-  addFilter(BuildContext context, FileModel file, Options? options) async {
+  Future<void> addFilter(BuildContext context, FileModel file, Options? options) async {
     var f = File(file.filePath!);
 
-    var image = imageLib.decodeImage(f.readAsBytesSync())!;
-    image = imageLib.copyResize(image, width: 600);
+    var image = image_lib.decodeImage(f.readAsBytesSync())!;
+    image = image_lib.copyResize(image, width: 600);
 
     Map? filterResult = await Navigator.push(
       context,
-      new MaterialPageRoute(
+      MaterialPageRoute(
         builder: (context) => PhotoFilterSelector(
-          title: Text(
-            this._translations.filters,
-            style: TextStyle(color: options!.customizationOptions.previewScreenCustomization.iconsColor),
-          ),
+          title: Text(_translations.filters, style: TextStyle(color: options!.customizationOptions.previewScreenCustomization.iconsColor)),
           image: image,
           filters: presetFiltersList,
           filename: basename(file.filePath!),
           appBarColor: options.customizationOptions.appBarColor,
           appBarIconsColor: options.customizationOptions.previewScreenCustomization.iconsColor,
-          loader: Center(
-            child: CircularProgressIndicator(
-              backgroundColor: options.customizationOptions.previewScreenCustomization.iconsColor,
-            ),
-          ),
+          loader: Center(child: CircularProgressIndicator(backgroundColor: options.customizationOptions.previewScreenCustomization.iconsColor)),
           fit: BoxFit.contain,
         ),
       ),
@@ -60,12 +53,12 @@ class ImagePreviewProvider extends ChangeNotifier {
       File? resultFile = filterResult['image_filtered'];
 
       if (resultFile != null) {
-        this._updateFiles(file, resultFile);
+        _updateFiles(file, resultFile);
       }
     }
   }
 
-  edit(FileModel file, Options options) async {
+  Future<void> edit(FileModel file, Options options) async {
     CroppedFile? editResult = await ImageCropper().cropImage(
       sourcePath: file.filePath!,
       compressFormat: ImageCompressFormat.png,
@@ -91,8 +84,8 @@ class ImagePreviewProvider extends ChangeNotifier {
         IOSUiSettings(
           minimumAspectRatio: 1.0,
           title: '',
-          doneButtonTitle: this._translations.save,
-          cancelButtonTitle: this._translations.cancel,
+          doneButtonTitle: _translations.save,
+          cancelButtonTitle: _translations.cancel,
           cropStyle: CropStyle.rectangle,
           aspectRatioPresets: [
             CropAspectRatioPreset.original,
@@ -101,35 +94,24 @@ class ImagePreviewProvider extends ChangeNotifier {
             CropAspectRatioPreset.ratio4x3,
             CropAspectRatioPreset.ratio16x9,
           ],
-        )
+        ),
       ],
     );
 
     if (editResult != null) {
-      this._updateFiles(file, File(editResult.path));
+      _updateFiles(file, File(editResult.path));
     }
   }
 
-  submit(BuildContext context) {
+  void submit(BuildContext context) {
     List<PickedFile> pickedFiles = [];
 
     if (files != null) {
       files!.map((file) {
-        pickedFiles.add(
-          PickedFile(
-            path: file!.filePath,
-            name: basename(file.filePath!),
-          ),
-        );
+        pickedFiles.add(PickedFile(path: file!.filePath, name: basename(file.filePath!)));
       }).toList();
 
-      Navigator.pop(
-        context,
-        StoryPickerResult(
-          pickedFiles: pickedFiles,
-          resultType: ResultType.IMAGE,
-        ),
-      );
+      Navigator.pop(context, StoryPickerResult(pickedFiles: pickedFiles, resultType: ResultType.IMAGE));
     }
   }
 }

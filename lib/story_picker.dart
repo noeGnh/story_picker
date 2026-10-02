@@ -1,4 +1,4 @@
-library story_picker;
+library;
 
 export 'src/models/result.dart';
 export 'src/models/options.dart';
